@@ -22,4 +22,3 @@ function parse_arguments(array $arguments)
     }
     return $arguments[1];
 }
-

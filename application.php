@@ -8,3 +8,4 @@ $values = read_values();
 $word = parse_arguments($argv);
 $result = hyphenate($word, $values);
 print_result($result);
+

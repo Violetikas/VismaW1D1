@@ -1,7 +1,6 @@
 <?php
 
-function print_result(string $result): void
+function print_result(array $result): void
 {
-    // TODO finish
     echo $result;
 }

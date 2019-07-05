@@ -48,7 +48,6 @@ function hyphenate(string $word, array $values): string
 }
 
 
-
 function extractNumbers(string $argument): array
 //finds if there's a number in needle, finds it's position
 {

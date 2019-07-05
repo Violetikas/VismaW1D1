@@ -1,10 +1,17 @@
 <?php
 
-require __DIR__ .'/fileReader.php';
-require __DIR__ .'/hyphenation.php';
-require __DIR__ .'/resultOutput.php';
+require __DIR__ . '/vendor/autoload.php';
 
-$values = read_values();
-$word = parse_arguments($argv);
-$result = hyphenate($word, $values);
-print_result($result);
+$reader = new \Fikusas\FileRead();
+$values = $reader->read_values();
+$word = '';
+
+if (count($argv) < 2) {
+    throw new RuntimeException('Must provide word!');
+} else $word = $argv[1];
+$hyphenate = new \Fikusas\Hyphenate($values);
+$result = $hyphenate->hyphenate($word);
+$printResults = new \Fikusas\PrintResults();
+$printResults->print_result($result);
+
+

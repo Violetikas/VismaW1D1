@@ -33,7 +33,7 @@ function hyphenate(string $word, array $values): string
             }
         }
     }
-    //splits word into array and insert numbers into certain places if number is detected in the place
+    //splits userInput into array and insert numbers into certain places if number is detected in the place
     $final = '';
     foreach (str_split($word) as $i => $l) {
         $final .= $l;

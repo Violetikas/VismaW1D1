@@ -4,14 +4,21 @@ require __DIR__ . '/vendor/autoload.php';
 
 $reader = new \Fikusas\FileRead();
 $values = $reader->read_values();
-$word = '';
+$userInput = '';
 
 if (count($argv) < 2) {
-    throw new RuntimeException('Must provide word!');
-} else $word = $argv[1];
+
+    echo "Use commands:\n $argv[0] -w [userInput]\n $argv[0] -s [sentence]\n $argv[0] -email [validate your email]";
+} else
+
+    if (isset($argv[1]) && isset($argv[2])){
+        $userOption = $argv[1];
+        $userInput = $argv[2];
+        //TODO divide user options for functions to use every option separately
+    }
+
 $hyphenate = new \Fikusas\Hyphenate($values);
-$result = $hyphenate->hyphenate($word);
+$result = $hyphenate->hyphenate($userInput);
 $printResults = new \Fikusas\PrintResults();
 $printResults->print_result($result);
-
 

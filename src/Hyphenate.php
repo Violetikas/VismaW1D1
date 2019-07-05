@@ -58,7 +58,7 @@ class Hyphenate
                 }
             }
         }
-        //splits word into array and insert numbers into certain places if number is detected in the place
+        //splits userInput into array and insert numbers into certain places if number is detected in the place
         $final = '';
         foreach (str_split($word) as $i => $l) {
             $final .= $l;
@@ -68,7 +68,7 @@ class Hyphenate
         }
         $time_end = microtime(true);
         $time = $time_end - $time_start;
-        echo "script took $time seconds to execute\n";
+        echo "\n script took $time seconds to execute\n";
         return $final;
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Read values from file and return all of them as array.
+ * Read sylables from file and return all of them as array.
  *
  * @param string $path
  * @return array

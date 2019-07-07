@@ -12,7 +12,13 @@ namespace Fikusas;
 class SentencePrepare
 {
 
+    private $wordsExtracted = [];
+    private $offset = (int)0;
 
 
+    public function extractWords($userInput){
+
+
+}
 
 }

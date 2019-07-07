@@ -8,34 +8,32 @@
 declare(strict_types=1);
 
 namespace Fikusas;
-//use \Fikusas\Hyphenate;
-//use \Fikusas\EmailValidator;
-//use \Fikusas\SentencePrepare;
 
 class OptionDivider
 {
+    /** @var Hyphenate */
+    private $hyphenator;
 
-    public function divideOptions(string $userOption, string $userInput): void
+    /**
+     * OptionDivider constructor.
+     * @param Hyphenate $hyphenator
+     */
+    public function __construct(Hyphenate $hyphenator, SentencePrepare $sentencePrepare)
     {
+        $this->hyphenator = $hyphenator;
+        $this->sentencePrepare = $sentencePrepare;
+    }
 
-        if (isset($userOption) && isset($userInput)) {
-
-            if ($userOption = '-w') {
-                //new
-                //TODO use hyphenate algorithm
-                echo 'do something';
-            }
-            if ($userOption = '-s') {
-
-                //TODO create sentence algorithm
-                echo 'do something';
-            }
-            if ($userOption = '-email') {
-                //TODO use email validation algorithm
-                echo 'do something';
-            }
+    public function divideOptions(InputParameters $inputOption)
+    {
+        if ($userOption = '-w') {
+            $this->hyphenator->hyphenate($inputOption->getUserInput());
         }
+        if ($userOption = '-s') {
 
+            //TODO create sentence algorithm
+            echo 'do something';
+        }
 
     }
 

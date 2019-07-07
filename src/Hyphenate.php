@@ -13,15 +13,15 @@ namespace Fikusas;
 
 class Hyphenate
 {
-    private $values2;
+    private $sylables;// sylables
 
     /**
      * Hyphenate constructor.
-     * @param $values1
+     * @param $sylables
      */
-    public function __construct($values1)
+    public function __construct($sylables)
     {
-        $this->values2 = $values1;
+        $this->sylables = $sylables;
     }
 
     public function hyphenate(string $word): string
@@ -29,9 +29,9 @@ class Hyphenate
         $time_start = microtime(true);
         $numbersInWord = [];
 
-        foreach ($this->values2 as $value) {
+        foreach ($this->sylables as $sylable) {
             //removes decimal numbers and dots
-            $toFind = preg_replace('/[\d.]/', '', $value);
+            $toFind = preg_replace('/[\d.]/', '', $sylable);
 
             //finds if there's needle in haystack
             $position = strpos($word, $toFind);
@@ -40,17 +40,17 @@ class Hyphenate
                 continue;
             }
             //finds if there's dot in the beginning of needle and only searches the beginning of haystack
-            if ($value[0] == '.' && $position !== 0) {
+            if ($sylable[0] == '.' && $position !== 0) {
                 continue;
             }
             //finds if there's dot at the end
-            if (($value[strlen($value) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
+            if (($sylable[strlen($sylable) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
                 continue;
             }
 
             // finds is there's no number in position or if it's smaller than number, if so - puts number in position
 
-            $numbers = $this->extractNumbers($value);
+            $numbers = $this->extractNumbers($sylable);
             foreach ($numbers as $position1 => $number) {
                 $position1 = $position1 + $position;
                 if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {

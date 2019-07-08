@@ -3,3 +3,4 @@ Dockerfile
 testRegex.php
 testSentenceForRegex.txt
 composer.phar
+vendor/

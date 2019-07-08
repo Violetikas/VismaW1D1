@@ -42,9 +42,9 @@ class SentenceHyphenator
         if (preg_match_all('/[a-zA-Z_]+/', $sentence, $matches, PREG_OFFSET_CAPTURE) > 0) {
             foreach ($matches[0] as $match) {
                 [$word, $wordStart] = $match;
-                $result .= substr($sentence, $offset, $wordStart - $offset); //pridedama sakinio pradzia
-                $result .= $this->hyphenator->hyphenate($word); //pridedu isskiemenuota zodi
-                $offset = $wordStart + strlen($word);//paslenku pozicija iki tos vietos kur
+                $result .= substr($sentence, $offset, $wordStart - $offset);
+                $result .= $this->hyphenator->hyphenate($word);
+                $offset = $wordStart + strlen($word);
             }
             $result .= substr($sentence, $offset);
         }

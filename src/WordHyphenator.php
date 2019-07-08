@@ -57,6 +57,8 @@ class WordHyphenator
         return $this->printResult($final);
     }
 
+
+
     private function extractNumbers(string $syllable): array
     //finds if there's a number in needle, finds it's position
     {
@@ -73,6 +75,8 @@ class WordHyphenator
 
         return $result;
     }
+
+
 
     private function printResult(string $result): string
     {

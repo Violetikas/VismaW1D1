@@ -13,6 +13,8 @@ class OptionDivider
 {
     /** @var Hyphenate */
     private $hyphenator;
+    private $word;
+    private $sentencePrepare;
 
     /**
      * OptionDivider constructor.
@@ -22,6 +24,7 @@ class OptionDivider
     {
         $this->hyphenator = $hyphenator;
         $this->sentencePrepare = $sentencePrepare;
+
     }
 
     public function divideOptions(InputParameters $inputOption)
@@ -31,8 +34,7 @@ class OptionDivider
         }
         if ($userOption = '-s') {
 
-            //TODO create sentence algorithm
-            echo 'do something';
+            $this->sentencePrepare->hyphenateSentence($inputOption->getUserInput(), $this->sentencePrepare->extractWordsFromSentence($inputOption->getUserInput()));
         }
 
     }

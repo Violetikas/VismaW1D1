@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/composer" />
+    </include_path>
+  </component>
   <component name="PhpInterpreters">
     <interpreters>
       <interpreter home="docker://php:7.2-cli-xdebug/php" id="5e6d784f-13e3-49b9-935f-ef35f7d1c342" name="php:7.2-cli-xdebug" debugger_id="php.debugger.XDebug">

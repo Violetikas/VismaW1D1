@@ -10,7 +10,7 @@ class FileRead
 {
     const FILEPATH = "tex-hyphenation-patterns.txt";
 
-    public function readHyphenationPatterns($path = self::FILEPATH)
+    public function readHyphenationPatterns($path = self::FILEPATH): array
     {
         if (false !== ($contents = file_get_contents($path))) {
             return explode("\n", $contents);
@@ -19,6 +19,7 @@ class FileRead
         }
     }
 }
+
 
 
 

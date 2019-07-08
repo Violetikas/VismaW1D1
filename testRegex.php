@@ -6,9 +6,9 @@
  * Time: 11:28
  */
 
-$path="testSentenceForRegex.txt";
-$search_expression = file_get_contents($path);
-$removeSomething = preg_replace('[^a-zA-Z0-9_]',$search_expression,"");
-$words = preg_split('/\s/', $search_expression, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+echo str_replace("world", "Petefvraewfrewfr", "Hello world, nice to meet you!");
 
-var_dump($removeSomething);
+
+
+
+

@@ -13,44 +13,39 @@ namespace Fikusas;
 
 class Hyphenate
 {
-    private $sylables;// sylables
+    private $syllables;
+    private $userInput;
+    private $userOption;
+
 
     /**
      * Hyphenate constructor.
-     * @param $sylables
+     * @param $syllables
      */
-    public function __construct($sylables)
+    public function __construct($syllables, $userInput)
     {
-        $this->sylables = $sylables;
+        $this->syllables = $syllables;
+        $this->userInput = $userInput;
+
     }
 
-    public function hyphenate(string $word): string
+
+    public function hyphenate($userInput): string
     {
-        $time_start = microtime(true);
         $numbersInWord = [];
-
-        foreach ($this->sylables as $sylable) {
-            //removes decimal numbers and dots
-            $toFind = preg_replace('/[\d.]/', '', $sylable);
-
-            //finds if there's needle in haystack
-            $position = strpos($word, $toFind);
-
+        foreach ($this->syllables as $syllable) {
+            $toFind = preg_replace('/[\d.]/', '', $syllable);
+            $position = strpos($userInput, $toFind);
             if (false === $position) {
                 continue;
             }
-            //finds if there's dot in the beginning of needle and only searches the beginning of haystack
-            if ($sylable[0] == '.' && $position !== 0) {
+            if ($syllable[0] == '.' && $position !== 0) {
                 continue;
             }
-            //finds if there's dot at the end
-            if (($sylable[strlen($sylable) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
+            if (($syllable[strlen($syllable) - 1] === '.') && ($position !== (strlen($userInput) - strlen($toFind)))) {
                 continue;
             }
-
-            // finds is there's no number in position or if it's smaller than number, if so - puts number in position
-
-            $numbers = $this->extractNumbers($sylable);
+            $numbers = $this->extractNumbers($syllable);
             foreach ($numbers as $position1 => $number) {
                 $position1 = $position1 + $position;
                 if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {
@@ -58,27 +53,23 @@ class Hyphenate
                 }
             }
         }
-        //splits userInput into array and insert numbers into certain places if number is detected in the place
         $final = '';
-        foreach (str_split($word) as $i => $l) {
+        foreach (str_split($userInput) as $i => $l) {
             $final .= $l;
             if (isset($numbersInWord[$i])) {
                 $final .= $numbersInWord[$i];
             }
         }
-        $time_end = microtime(true);
-        $time = $time_end - $time_start;
-        echo "\n script took $time seconds to execute\n";
         return $final;
     }
 
 
-    private function extractNumbers(string $argument): array
+    public function extractNumbers(string $syllable): array
 //finds if there's a number in needle, finds it's position
     {
         $result = [];
-        if (preg_match_all('/\d+/', $argument, $matches, PREG_OFFSET_CAPTURE) > 0) {
-            $offset = preg_match('/[^\d.]/', $argument);
+        if (preg_match_all('/\d+/', $syllable, $matches, PREG_OFFSET_CAPTURE) > 0) {
+            $offset = preg_match('/[^\d.]/', $syllable);
             foreach ($matches[0] as $match) {
                 [$number, $position] = $match;
                 $position = $position - $offset;
@@ -88,6 +79,21 @@ class Hyphenate
         }
 
         return $result;
+    }
+
+    public function printResult(string $result): void
+    {
+        for ($i = 0; $i < strlen($result); $i++) {
+            if (!is_numeric($result[$i])) {
+                continue;
+            }
+            if (((int)$result[$i]) % 2 !== 0) {
+                $result = str_replace($result[$i], '-', $result);
+            } else {
+                $result = str_replace($result[$i], '', $result);
+            }
+        }
+        echo $result . "\n";
     }
 
 }

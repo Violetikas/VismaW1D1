@@ -8,7 +8,7 @@
 
 echo str_replace("world", "Petefvraewfrewfr", "Hello world, nice to meet you!");
 
+$hyphenator = new Fikusas\WordHyphenator();
+$sentencePrepare = new \Fikusas\SentenceHyphenator($sylables, $userInput, $hyphenator);
 
-
-
-
+//$hyphenate = new \Fikusas\Hyphenate($sylables, $userInput);

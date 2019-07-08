@@ -11,13 +11,15 @@ $userInteraction = new \Fikusas\UserInteraction();
 
 $userInput = $userInteraction->getUserInput();
 
-$hyphenate = new \Fikusas\Hyphenate($sylables, $userInput);
+$hyphenate = new \Fikusas\WordHyphenator($sylables);
 
-$result = $hyphenate->hyphenate($userInput->getUserInput());
+$sentenceHyphenator = new \Fikusas\SentenceHyphenator($hyphenate);
 
-$printResults = new \Fikusas\Hyphenate($sylables, $userInput);
+$optionDivider = new Fikusas\OptionDivider($hyphenate, $sentenceHyphenator);
 
-$printResults->printResult($result);
+$result = $optionDivider->divideOptions($userInput);
+
+echo $result . "\n";
 
 $time_end = microtime(true);
 

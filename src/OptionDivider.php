@@ -9,33 +9,39 @@ declare(strict_types=1);
 
 namespace Fikusas;
 
+use http\Exception\RuntimeException;
+
 class OptionDivider
 {
-    /** @var Hyphenate */
+    /** @var WordHyphenator */
     private $hyphenator;
     private $word;
-    private $sentencePrepare;
+    private $sentenceHyphenator;
 
     /**
      * OptionDivider constructor.
-     * @param Hyphenate $hyphenator
+     * @param WordHyphenator $hyphenator
      */
-    public function __construct(Hyphenate $hyphenator, SentencePrepare $sentencePrepare)
+    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator)
     {
         $this->hyphenator = $hyphenator;
-        $this->sentencePrepare = $sentencePrepare;
+        $this->sentenceHyphenator = $sentenceHyphenator;
 
     }
 
     public function divideOptions(InputParameters $inputOption)
     {
-        if ($userOption = '-w') {
-            $this->hyphenator->hyphenate($inputOption->getUserInput());
-        }
-        if ($userOption = '-s') {
+        $userOption = $inputOption->getUserOption();
+        if ($userOption == '-w') {
+            return $this->hyphenator->hyphenate($inputOption->getUserInput());
 
-            $this->sentencePrepare->hyphenateSentence($inputOption->getUserInput(), $this->sentencePrepare->extractWordsFromSentence($inputOption->getUserInput()));
         }
+        if ($userOption == '-s') {
+
+           return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
+        }
+
+        throw new RuntimeException('Missing option');
 
     }
 

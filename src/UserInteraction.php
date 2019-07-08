@@ -12,14 +12,8 @@ namespace Fikusas;
 
 class UserInteraction
 {
-
-    /**
-     * @return InputParameters
-     */
-    public function getUserInput(): ?InputParameters
+    public function getUserInput($argv): ?InputParameters
     {
-        global $argv;
-
         if (count($argv) < 2) {
 
             echo "Use commands:\n $argv[0] -w [userInput]\n $argv[0] -s [sentence]\n";

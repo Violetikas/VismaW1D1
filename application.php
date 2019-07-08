@@ -9,7 +9,7 @@ $sylables = $fileReader->readHyphenationPatterns();
 
 $userInteraction = new \Fikusas\UserInteraction();
 
-$userInput = $userInteraction->getUserInput();
+$userInput = $userInteraction->getUserInput($argv);
 
 $hyphenate = new \Fikusas\WordHyphenator($sylables);
 

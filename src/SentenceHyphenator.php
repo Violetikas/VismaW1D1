@@ -8,30 +8,18 @@
 
 namespace Fikusas;
 
+use \Log\Logger;
 
 class SentenceHyphenator
 {
     protected $hyphenator;
+//    private $logger;
 
-    public function __construct(WordHyphenator $hyphenator)
+    public function __construct(/**Logger $logger,*/ WordHyphenator $hyphenator)
     {
+//        $this->logger = $logger;
         $this->hyphenator = $hyphenator;
-    }
 
-    private function extractWordsFromSentence(string $userInput): string
-    {
-
-        $wordsExtracted = [];
-        $word = '';
-        $wordOffset = (int)0;
-        if (preg_match_all("\w+", $userInput, $wordsExtracted, PREG_OFFSET_CAPTURE) > 0) {
-            foreach ($wordsExtracted[0] as $wordExtracted) {
-                [$word, $wordOffset] = $wordExtracted;
-                $wordsExtracted[$wordOffset] = $word;
-            }
-        }
-
-        return $word;
     }
 
     public function hyphenateSentence(string $sentence): string
@@ -47,6 +35,8 @@ class SentenceHyphenator
                 $offset = $wordStart + strlen($word);
             }
             $result .= substr($sentence, $offset);
+//            $this->logger->notice("Sentence '{sentence}'hyphenated to '{result}'", array('sentence' => $sentence,'result' => $result));
+
         }
 
         return $result;

@@ -5,13 +5,13 @@ $time_start = microtime(true);
 
 $fileReader = new \Fikusas\FileRead();
 
-$sylables = $fileReader->readHyphenationPatterns();
+$syllables = $fileReader->readHyphenationPatterns();
 
 $userInteraction = new \Fikusas\UserInteraction();
 
 $userInput = $userInteraction->getUserInput($argv);
 
-$hyphenate = new \Fikusas\WordHyphenator($sylables);
+$hyphenate = new \Fikusas\WordHyphenator($syllables);
 
 $sentenceHyphenator = new \Fikusas\SentenceHyphenator($hyphenate);
 

@@ -3,5 +3,8 @@
     "psr-4": {
       "Fikusas\\": "src/"
     }
+  },
+  "require": {
+    "psr/log": "^1.1"
   }
 }

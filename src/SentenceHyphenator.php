@@ -8,16 +8,16 @@
 
 namespace Fikusas;
 
-use \Log\Logger;
+use Psr\Log\LoggerInterface;
 
 class SentenceHyphenator
 {
     protected $hyphenator;
-//    private $logger;
+    private $logger;
 
-    public function __construct(/**Logger $logger,*/ WordHyphenator $hyphenator)
+    public function __construct(LoggerInterface $logger, WordHyphenator $hyphenator)
     {
-//        $this->logger = $logger;
+        $this->logger = $logger;
         $this->hyphenator = $hyphenator;
 
     }
@@ -35,7 +35,8 @@ class SentenceHyphenator
                 $offset = $wordStart + strlen($word);
             }
             $result .= substr($sentence, $offset);
-//            $this->logger->notice("Sentence '{sentence}'hyphenated to '{result}'", array('sentence' => $sentence,'result' => $result));
+            $this->logger->notice("Sentence '{sentence}'hyphenated to '{result}'", array('sentence' => $sentence,'result' => $result));
+
 
         }
 

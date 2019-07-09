@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Log;
+namespace Fikusas\Log;
 
 
 class LogLevel

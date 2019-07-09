@@ -7,6 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/Log/Psr/Log'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Fikusas\\' => array($baseDir . '/src'),
 );

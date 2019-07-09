@@ -4,56 +4,91 @@
 namespace Log;
 
 
+use http\Exception\RuntimeException;
 
 class Logger implements LoggerInterface
 {
+    private $fileName;
+
+    public function __construct(string $fileName = 'errorLogger.log')
+    {
+        $this->fileName = $fileName;
+    }
 
     public function critical($message, array $context = array())
     {
-        return $this->processLog($message,
-            $context,
-            LogLevel::CRITICAL,
-            "[critical]",
-            LogLevel::CRITICAL_COLOR
-        );
+        return $this->writeToFile($message, $context);
     }
 
     public function error($message, array $context = array())
     {
-        // TODO: Implement error() method.
+        return $this->writeToFile($message, $context);
     }
+
     public function warning($message, array $context = array())
     {
-        // TODO: Implement warning() method.
+        return $this->writeToFile($message, $context);
     }
+
     public function notice($message, array $context = array())
     {
-        // TODO: Implement notice() method.
+        return $this->writeToFile($message, $context);
     }
+
     public function emergency($message, array $context = array())
     {
-        // TODO: Implement emergency() method.
+        return $this->writeToFile($message, $context);
     }
+
     public function alert($message, array $context = array())
     {
-        // TODO: Implement alert() method.
+        return $this->writeToFile($message, $context);
     }
+
     public function debug($message, array $context = array())
     {
-        // TODO: Implement debug() method.
+        return $this->writeToFile($message, $context);
     }
-    public function log($level, $message, array $context = array())
-    {
-        // TODO: Implement log() method.
-    }
+
     public function info($message, array $context = array())
     {
-        // TODO: Implement info() method.
+        return $this->writeToFile($message, $context);
+    }
+
+    public function log($level, $message, array $context = array())
+    {
+        $this->isLogLevelValid($level);
+        $this->$level($message, $context);
     }
 
 
+    private function writeToFile($message, array $context = array())
+    {
+        $fileName = $this->fileName;
+        $fd = fopen($fileName, "a");
+        $message = $this->interpolate($message, $context);
+        $str = "[" . date("Y/m/d h:i:s", mktime()) . "] " . $message;
+        fwrite($fd, $str . "\n");
+        fclose($fd);
+    }
 
-        private function logToFile($filename, $msg)
-    {//TODO: make a function that logs to file
+
+    function interpolate($message, array $context = array()): string
+    {
+        foreach ($context as $key => $val) {
+            if (!is_array($val) && (!is_object($val) || method_exists($val, '__toString'))) {
+                $message = str_replace('{' . $key . '}', $val, $message);
+            }
+        }
+        return $message;
+    }
+
+    private function isLogLevelValid(string $level)
+    {
+        if ($level != LogLevel::ERROR && $level != LogLevel::EMERGENCY && $level != LogLevel::CRITICAL &&
+            $level != LogLevel::DEBUG && $level != LogLevel::WARNING && $level != LogLevel::INFO && $level
+            != LogLevel::NOTICE && $level != LogLevel::ALERT) {
+            throw new RuntimeException('Log level {$level} does not exist');
+        }
     }
 }

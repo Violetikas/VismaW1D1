@@ -10,7 +10,7 @@ class Logger
 {
     private $fileName;
 
-    public function __construct(string $fileName = 'errorLogger.log')
+    public function __construct(string $fileName = 'errorLogger.Log')
     {
         $this->fileName = $fileName;
     }

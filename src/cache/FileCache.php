@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Cache;
+namespace Fikusas\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 
-class FileCache
+class FileCache extends
 {
 
 

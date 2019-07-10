@@ -1,31 +1,6 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use Fikusas\Cache\FileCache;
-
-$logger = new Fikusas\Log\Logger();
-$time_start = microtime(true);
-
-$fileReader = new Fikusas\FileRead();
-
-$syllables = $fileReader->readHyphenationPatterns();
-
-$userInteraction = new Fikusas\UserInteraction();
-
-$userInput = $userInteraction->getUserInput($argv);
-
-$hyphenate = new Fikusas\WordHyphenator($$syllables);
-
-$sentenceHyphenator = new Fikusas\SentenceHyphenator($logger, $hyphenate);
-
-$optionDivider = new Fikusas\OptionDivider($hyphenate, $sentenceHyphenator);
-
-$result = $optionDivider->divideOptions($userInput);
-
-echo $result . "\n";
-
-$time_end = microtime(true);
-
-$time = $time_end - $time_start;
-
-echo "\n script took $time seconds to execute\n";
+$main = new Fikusas\Main();
+echo $main->mainApplication($argv)."\n";
+echo " Script took ". $main->stopTime(). "seconds to execute\n";

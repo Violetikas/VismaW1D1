@@ -11,14 +11,11 @@ declare(strict_types=1);
 namespace Fikusas;
 
 
-
 use Fikusas\Cache\FileCache;
 
 class WordHyphenator
 {
     private $syllables;
-
-
 
     public function __construct(array $syllables)
     {
@@ -58,7 +55,6 @@ class WordHyphenator
         }
         return $this->printResult($final, $word);
     }
-
 
     private function extractNumbers(string $syllable): array
         //finds if there's a number in needle, finds it's position

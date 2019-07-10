@@ -5,8 +5,6 @@ namespace Fikusas;
 
 use Fikusas\Log;
 
-require __DIR__ . '../vendor/autoload.php';
-
 class Main
 {
     public function startTime()
@@ -15,39 +13,38 @@ class Main
         return $timeStart;
     }
 
-// TODO decide what functions to make
 
-//
-//        $logger = new Log\Logger();
-//
-//        $fileReader = new FileRead();
-//
-//        $syllables = $fileReader->readHyphenationPatterns();
-//
-//        $userInteraction = new UserInteraction();
-//
-//        $userInput = $userInteraction->getUserInput($argv);
-//
-//        $hyphenate = new WordHyphenator($syllables);
-//
-//        $sentenceHyphenator = new SentenceHyphenator($logger, $hyphenate);
-//
-//        $optionDivider = new OptionDivider($hyphenate, $sentenceHyphenator);
-//
-//        $result = $optionDivider->divideOptions($userInput);
-//
-//        echo $result . "\n";
-//
+    public function mainApplication($argv)
+    {
+        $logger = new Log\Logger();
 
-    public function stopTime (){
-        $time_end = microtime(true);
+        $fileReader = new FileRead();
 
-        $time = $time_end - $this->startTime();
+        $syllables = $fileReader->readHyphenationPatterns();
 
-        echo "\n script took $time seconds to execute\n";
+        $userInteraction = new UserInteraction();
+
+        $userInput = $userInteraction->getUserInput($argv);
+
+        $hyphenate = new WordHyphenator($syllables);
+
+        $sentenceHyphenator = new SentenceHyphenator($logger, $hyphenate);
+
+        $optionDivider = new OptionDivider($hyphenate, $sentenceHyphenator);
+
+        $result = $optionDivider->divideOptions($userInput);
+
+        return $result;
     }
 
 
+    public function stopTime()
+    {
+        $startTime = $this->startTime();
+        $time = microtime(true)-$startTime;
+
+        return $time;
+    }
 
 
 }

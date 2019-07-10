@@ -1,24 +1,20 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-//use Fikusas\Main;
-//
-//new Main();
-
 $logger = new Fikusas\Log\Logger();
 $time_start = microtime(true);
 
-$fileReader = new \Fikusas\FileRead();
+$fileReader = new Fikusas\FileRead();
 
 $syllables = $fileReader->readHyphenationPatterns();
 
-$userInteraction = new \Fikusas\UserInteraction();
+$userInteraction = new Fikusas\UserInteraction();
 
 $userInput = $userInteraction->getUserInput($argv);
 
-$hyphenate = new \Fikusas\WordHyphenator($syllables);
+$hyphenate = new Fikusas\WordHyphenator($syllables);
 
-$sentenceHyphenator = new \Fikusas\SentenceHyphenator($logger, $hyphenate);
+$sentenceHyphenator = new Fikusas\SentenceHyphenator($logger, $hyphenate);
 
 $optionDivider = new Fikusas\OptionDivider($hyphenate, $sentenceHyphenator);
 

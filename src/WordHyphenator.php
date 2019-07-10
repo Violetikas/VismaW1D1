@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Fikusas;
 
 
+
 class WordHyphenator
 {
     private $syllables;
@@ -22,11 +23,29 @@ class WordHyphenator
     public function __construct(array $syllables)
     {
         $this->syllables = $syllables;
+
+
     }
+
+    //example of cache usage from other code TODO adapt it to my code
+//        if (!$this->cache->has($word)) {
+//            $this->clearVariables();
+//            $this->word = $word;
+//            $this->findValidPatterns();
+//            $this->pushDigitsToWord();
+//            $this->completeWordWithSyllables();
+//            $result = $this->addSyllableSymbols();
+//            $this->cache->set($word, $result);
+//            return $result;
+//        } else {
+//            return (string)$this->cache->get($word);
+//        }
+
 
     public function hyphenate(string $word): string
     {
         $numbersInWord = [];
+
         foreach ($this->syllables as $syllable) {
             $toFind = preg_replace('/[\d.]/', '', $syllable);
             $position = strpos($word, $toFind);
@@ -58,9 +77,8 @@ class WordHyphenator
     }
 
 
-
     private function extractNumbers(string $syllable): array
-    //finds if there's a number in needle, finds it's position
+        //finds if there's a number in needle, finds it's position
     {
         $result = [];
         if (preg_match_all('/\d+/', $syllable, $matches, PREG_OFFSET_CAPTURE) > 0) {
@@ -75,7 +93,6 @@ class WordHyphenator
 
         return $result;
     }
-
 
 
     private function printResult(string $result): string

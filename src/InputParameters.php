@@ -21,7 +21,7 @@ class InputParameters
      */
     public function __construct($userOption, $userInput)
     {
-        $this->userOption =$userOption;
+        $this->userOption = $userOption;
         $this->userInput = $userInput;
     }
 

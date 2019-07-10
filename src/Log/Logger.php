@@ -4,7 +4,7 @@
 namespace Fikusas\Log;
 
 use Psr\Log\AbstractLogger;
-use http\Exception\RuntimeException;
+use RuntimeException;
 
 class Logger extends AbstractLogger
 {

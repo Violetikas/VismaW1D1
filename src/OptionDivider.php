@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Fikusas;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 
 class OptionDivider
 {
@@ -21,6 +21,7 @@ class OptionDivider
     /**
      * OptionDivider constructor.
      * @param WordHyphenator $hyphenator
+     * @param SentenceHyphenator $sentenceHyphenator
      */
     public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator)
     {
@@ -38,12 +39,11 @@ class OptionDivider
         }
         if ($userOption == '-s') {
 
-           return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
+            return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
         }
 
         throw new RuntimeException('Missing option');
 
     }
-
 
 }

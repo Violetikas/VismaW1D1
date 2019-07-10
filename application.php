@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
+use Fikusas\Cache\FileCache;
+
 $logger = new Fikusas\Log\Logger();
 $time_start = microtime(true);
 
@@ -12,7 +14,7 @@ $userInteraction = new Fikusas\UserInteraction();
 
 $userInput = $userInteraction->getUserInput($argv);
 
-$hyphenate = new Fikusas\WordHyphenator($syllables);
+$hyphenate = new Fikusas\WordHyphenator($$syllables);
 
 $sentenceHyphenator = new Fikusas\SentenceHyphenator($logger, $hyphenate);
 

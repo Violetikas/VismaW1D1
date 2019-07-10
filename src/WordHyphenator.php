@@ -12,35 +12,18 @@ namespace Fikusas;
 
 
 
+use Fikusas\Cache\FileCache;
+
 class WordHyphenator
 {
     private $syllables;
 
-    /**
-     * Hyphenate constructor.
-     * @param $syllables
-     */
+
+
     public function __construct(array $syllables)
     {
         $this->syllables = $syllables;
-
-
     }
-
-    //example of cache usage from other code TODO adapt it to my code
-//        if (!$this->cache->has($word)) {
-//            $this->clearVariables();
-//            $this->word = $word;
-//            $this->findValidPatterns();
-//            $this->pushDigitsToWord();
-//            $this->completeWordWithSyllables();
-//            $result = $this->addSyllableSymbols();
-//            $this->cache->set($word, $result);
-//            return $result;
-//        } else {
-//            return (string)$this->cache->get($word);
-//        }
-
 
     public function hyphenate(string $word): string
     {
@@ -73,7 +56,7 @@ class WordHyphenator
                 $final .= $numbersInWord[$i];
             }
         }
-        return $this->printResult($final);
+        return $this->printResult($final, $word);
     }
 
 
@@ -95,7 +78,7 @@ class WordHyphenator
     }
 
 
-    private function printResult(string $result): string
+    private function printResult(string $result, $word): string
     {
         for ($i = 0; $i < strlen($result); $i++) {
             if (!is_numeric($result[$i])) {

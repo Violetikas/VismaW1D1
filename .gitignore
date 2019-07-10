@@ -4,3 +4,4 @@ testRegex.php
 testSentenceForRegex.txt
 composer.phar
 vendor/
+errorLogger.Log

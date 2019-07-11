@@ -8,6 +8,7 @@
     "psr/log": "^1.1",
     "psr/simple-cache": "^1.0",
     "ext-json": "*",
-    "ext-http": "*"
+    "ext-http": "*",
+    "ext-pdo": "*"
   }
 }

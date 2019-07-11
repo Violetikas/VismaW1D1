@@ -9,22 +9,23 @@
 declare(strict_types=1);
 
 namespace Fikusas;
-
-
-use Fikusas\Cache\FileCache;
+use Psr\SimpleCache\CacheInterface;
 
 class WordHyphenator
 {
     private $syllables;
+    private $cache;
 
-    public function __construct(array $syllables)
+    public function __construct(array $syllables, CacheInterface $cache)
     {
         $this->syllables = $syllables;
+        $this->cache = $cache;
     }
 
     public function hyphenate(string $word): string
     {
         $numbersInWord = [];
+
 
         foreach ($this->syllables as $syllable) {
             $toFind = preg_replace('/[\d.]/', '', $syllable);
@@ -57,7 +58,6 @@ class WordHyphenator
     }
 
     private function extractNumbers(string $syllable): array
-        //finds if there's a number in needle, finds it's position
     {
         $result = [];
         if (preg_match_all('/\d+/', $syllable, $matches, PREG_OFFSET_CAPTURE) > 0) {
@@ -73,9 +73,10 @@ class WordHyphenator
         return $result;
     }
 
-
-    private function printResult(string $result, $word): string
+    private function printResult(string $result): string
     {
+        $key = 'hyphenatedWord';
+        if (!$this->cache->has('hyphenatedWord')){
         for ($i = 0; $i < strlen($result); $i++) {
             if (!is_numeric($result[$i])) {
                 continue;
@@ -86,7 +87,10 @@ class WordHyphenator
                 $result = str_replace($result[$i], '', $result);
             }
         }
+        $this->cache->set("hyphenatedWord", $result);
         return $result;
+        } else {
+            return $this->cache->get("hyphenatedWord", $result);
+        }
     }
-
 }

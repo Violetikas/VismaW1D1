@@ -3,6 +3,7 @@
 
 namespace Fikusas;
 
+use Fikusas\Cache\FileCache;
 use Fikusas\Log;
 
 class Main
@@ -18,7 +19,9 @@ class Main
     {
         $logger = new Log\Logger();
 
-        $fileReader = new FileRead();
+        $cache = new cache\FileCache( '',86400);
+
+        $fileReader = new FileRead($cache);
 
         $syllables = $fileReader->readHyphenationPatterns();
 
@@ -26,7 +29,7 @@ class Main
 
         $userInput = $userInteraction->getUserInput($argv);
 
-        $hyphenate = new WordHyphenator($syllables);
+        $hyphenate = new WordHyphenator($syllables, $cache);
 
         $sentenceHyphenator = new SentenceHyphenator($logger, $hyphenate);
 

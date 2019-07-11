@@ -1,5 +1,87 @@
 <?php
 
+//namespace Fikusas\Cache;
+
+//
+//use Psr\SimpleCache\CacheInterface;
+//
+//class FileCache implements CacheInterface
+//{
+//    private $values;
+//    private $path;
+//
+//
+//    public function __construct(string $path)
+//    {
+//        $this->path = $path;
+//        $this->values = json_decode(file_get_contents($path), true);
+//    }
+//
+//    public function __destruct()
+//    {
+//        file_put_contents($this->path, json_encode($this->values));
+//    }
+//
+//
+//    public function get($key, $default = null)
+//    {
+//        return $this->values[$key] ?? $default;
+//    }
+//
+//
+//    public function set($key, $value, $ttl = null)
+//    {
+//        $this->values[$key] = $value;
+//    }
+//
+//
+//    public function delete($key)
+//    {
+//        unset($this->values[$key]);
+//    }
+//
+//
+//    public function clear()
+//    {
+//        $this->values = [];
+//    }
+//
+//
+//    public function getMultiple($keys, $default = null)
+//    {
+//        foreach ($keys as $key) {
+//            yield $this->get($key);
+//        }
+//    }
+//
+//    public function setMultiple($values, $ttl = null)
+//    {
+//        foreach ($values as $key => $value) {
+//            $this->set($key, $value, $ttl);
+//        }
+//    }
+//
+//
+//    public function deleteMultiple($keys)
+//    {
+//        foreach ($keys as $key) {
+//            $this->delete($key);
+//        }
+//    }
+//
+//
+//    public function has($key)
+//    {
+//        return array_key_exists($key, $this->values);
+//    }
+//
+//
+//
+//
+//}
+
+
+
 
 namespace Fikusas\Cache;
 
@@ -32,9 +114,9 @@ class FileCache implements CacheInterface
         if ($path === false) {
             throw new InvalidArgumentException("cache path does not exist: {$cachePath}");
         }
-        if (!is_writable($path . DIRECTORY_SEPARATOR)) {
-            throw new InvalidArgumentException("cache path is not writable: {$cachePath}");
-        }
+//        if (!is_writable($path . DIRECTORY_SEPARATOR)) {
+//            throw new InvalidArgumentException("cache path is not writable: {$cachePath}");
+//        }
         $this->cachePath = $path;
     }
 

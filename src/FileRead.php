@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace Fikusas;
 
-use RuntimeException;
+
+use Psr\SimpleCache\CacheInterface;
 
 class FileRead
 {
     const FILEPATH = "tex-hyphenation-patterns.txt";
+    private $cache;
+
+    public function __construct(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     public function readHyphenationPatterns($path = self::FILEPATH): array
     {
-        if (false !== ($contents = file_get_contents($path))) {
-            return explode("\n", $contents);
+        $contents = file_get_contents($path);
+        $data = [];
+        if (!$this->cache->has("pattern")) {
+            $data = explode("\n", $contents);
+            $this->cache->set("pattern", $data);
+            return $data;
         } else {
-            throw new RuntimeException('Failed to read ' . $path);
+            return $this->cache->get("pattern");
         }
     }
 }
-
-
 
 

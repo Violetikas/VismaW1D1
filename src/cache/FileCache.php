@@ -1,7 +1,7 @@
 <?php
 
 //namespace Fikusas\Cache;
-
+//
 //
 //use Psr\SimpleCache\CacheInterface;
 //

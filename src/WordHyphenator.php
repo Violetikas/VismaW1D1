@@ -75,8 +75,8 @@ class WordHyphenator
 
     private function printResult(string $result): string
     {
-        $key = 'hyphenatedWord';
-        if (!$this->cache->has('hyphenatedWord')){
+        $key=$result;
+        if (!$this->cache->has($key)){
         for ($i = 0; $i < strlen($result); $i++) {
             if (!is_numeric($result[$i])) {
                 continue;
@@ -87,10 +87,12 @@ class WordHyphenator
                 $result = str_replace($result[$i], '', $result);
             }
         }
-        $this->cache->set("hyphenatedWord", $result);
+        $this->cache->set($key, $result);
         return $result;
+
         } else {
-            return $this->cache->get("hyphenatedWord", $result);
+            return $this->cache->get($key, $result);
         }
+
     }
 }

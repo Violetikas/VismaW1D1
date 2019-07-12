@@ -97,6 +97,7 @@ use Traversable;
 class FileCache implements CacheInterface
 {
     const PSR16RESERVED = '/\{|\}|\(|\)|\/|\\\\|\@|\:/u';
+    const INVALID_KEY_MESSAGE = "Key is not valid.";
     private $cachePath;
     private $defaultTTL;
     private $dirMode;
@@ -112,10 +113,10 @@ class FileCache implements CacheInterface
         }
         $path = realpath($cachePath);
         if ($path === false) {
-            throw new InvalidArgumentException("cache path does not exist: {$cachePath}");
+            throw new InvalidArgumentException("Cache path does not exist: {$cachePath}");
         }
 //        if (!is_writable($path . DIRECTORY_SEPARATOR)) {
-//            throw new InvalidArgumentException("cache path is not writable: {$cachePath}");
+//            throw new InvalidArgumentException("Cache path is not writable: {$cachePath}");
 //        }
         $this->cachePath = $path;
     }
@@ -124,28 +125,32 @@ class FileCache implements CacheInterface
     {
         $path = $this->getPath($key);
         $expiresAt = @filemtime($path);
+        if (!$this->validateKey($key)) {
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
+        else {
 
-        if ($expiresAt === false) {
-            return $default;
-        }
-        if ($this->getTime() >= $expiresAt) {
-            @unlink($path);
-            return $default;
-        }
+            if ($expiresAt === false) {
+                return $default;
+            }
+            if ($this->getTime() >= $expiresAt) {
+                @unlink($path);
+                return $default;
+            }
 
-        $data = @file_get_contents($path);
+            $data = @file_get_contents($path);
 
-        if ($data === false) {
-            return $default;
+            if ($data === false) {
+                return $default;
+            }
+            if ($data === 'b:0;') {
+                return false;
+            }
+            $value = @unserialize($data);
+            if ($value === false) {
+                return $default;
+            }
+            return $value;
         }
-        if ($data === 'b:0;') {
-            return false;
-        }
-        $value = @unserialize($data);
-        if ($value === false) {
-            return $default;
-        }
-        return $value;
     }
 
 
@@ -153,6 +158,9 @@ class FileCache implements CacheInterface
     {
         $path = $this->getPath($key);
         $dir = dirname($path);
+        if (!$this->validateKey($key)) {
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
+        else {
         if (!file_exists($dir)) {
             // ensure that the parent path exists:
             $this->mkdir($dir);
@@ -178,6 +186,7 @@ class FileCache implements CacheInterface
         }
         @unlink($temp_path);
         return false;
+        }
     }
 
     public function delete($key)
@@ -243,7 +252,10 @@ class FileCache implements CacheInterface
 
     public function has($key)
     {
-        return $this->get($key, $this) !== $this;
+        if (!$this->validateKey($key)) {
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
+
+        else return $this->get($key, $this) !== $this;
     }
 
     public function increment($key, $step = 1)
@@ -312,25 +324,12 @@ class FileCache implements CacheInterface
         }
     }
 
-    protected function validateKey($key)
+    private function validateKey(string $key): bool
     {
-        if (!is_string($key)) {
-            $type = is_object($key) ? get_class($key) : gettype($key);
-            throw new InvalidArgumentException("invalid key type: {$type} given, must be string.\n
-            Must contain characters [0-9A-Za-z_.].Must be < 64 characters\"");
+        if (strlen($key) > 64) {
+            return false;
         }
-        if ($key === "") {
-            throw new InvalidArgumentException("invalid key: empty string given.\n
-             Must contain characters [0-9A-Za-z_.]. Must be < 64 characters");
-        }
-        if ($key === null) {
-            throw new InvalidArgumentException("invalid key: null given. \n
-            Must contain characters [0-9A-Za-z_.]. Must be < 64 characters\"");
-        }
-        if (preg_match(self::PSR16RESERVED, $key, $match) === 1) {
-            throw new InvalidArgumentException("invalid character in key: {$match[0]} .\n
-             Must contain characters [0-9A-Za-z_.]. Must be < 64 characters\"");
-        }
+        return preg_match('/^[0-9A-Za-z_.]+$/', $key) == 1;
     }
 
     private function mkdir($path)
@@ -342,7 +341,6 @@ class FileCache implements CacheInterface
         mkdir($path);
         chmod($path, $this->dirMode);
     }
-
 
 }
 

@@ -3,8 +3,14 @@
 
 namespace Fikusas;
 
-use Fikusas\Cache\FileCache;
+
+
+use Fikusas\Cache;
+use Fikusas\FileRead\FileRead;
+use Fikusas\Hyphenation\WordHyphenator;
+use Fikusas\Hyphenation\SentenceHyphenator;
 use Fikusas\Log;
+use Fikusas\UserInteraction;
 
 class Main
 {
@@ -19,13 +25,13 @@ class Main
     {
         $logger = new Log\Logger();
 
-        $cache = new cache\FileCache( '',86400);
+        $cache = new Cache\FileCache('1', 86400);
 
         $fileReader = new FileRead($cache);
 
         $syllables = $fileReader->readHyphenationPatterns();
 
-        $userInteraction = new UserInteraction();
+        $userInteraction = new UserInteraction\UserInteraction();
 
         $userInput = $userInteraction->getUserInput($argv);
 
@@ -33,7 +39,7 @@ class Main
 
         $sentenceHyphenator = new SentenceHyphenator($logger, $hyphenate);
 
-        $optionDivider = new OptionDivider($hyphenate, $sentenceHyphenator);
+        $optionDivider = new UserInteraction\OptionDivider($hyphenate, $sentenceHyphenator);
 
         $result = $optionDivider->divideOptions($userInput);
 

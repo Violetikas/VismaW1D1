@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fikusas;
+namespace Fikusas\FileRead;
 
 
 use Psr\SimpleCache\CacheInterface;

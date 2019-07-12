@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Fikusas;
+namespace Fikusas\UserInteraction;
 
 
 class UserInteraction

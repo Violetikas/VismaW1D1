@@ -7,15 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Fikusas;
+namespace Fikusas\UserInteraction;
 
+use Fikusas\Hyphenation\WordHyphenator;
+use Fikusas\Hyphenation\SentenceHyphenator;
 use RuntimeException;
 
 class OptionDivider
 {
     /** @var WordHyphenator */
     private $hyphenator;
-    private $word;
     private $sentenceHyphenator;
 
     /**

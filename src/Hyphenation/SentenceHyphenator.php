@@ -6,8 +6,9 @@
  * Time: 12:50
  */
 
-namespace Fikusas;
+namespace Fikusas\Hyphenation;
 
+use Fikusas\Hyphenation\WordHyphenator;
 use Psr\Log\LoggerInterface;
 
 class SentenceHyphenator

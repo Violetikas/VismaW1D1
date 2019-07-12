@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Fikusas;
+namespace Fikusas\Hyphenation;
 use Psr\SimpleCache\CacheInterface;
 
 class WordHyphenator
@@ -54,7 +54,7 @@ class WordHyphenator
                 $final .= $numbersInWord[$i];
             }
         }
-        return $this->printResult($final, $word);
+        return $this->printResult($final);
     }
 
     private function extractNumbers(string $syllable): array

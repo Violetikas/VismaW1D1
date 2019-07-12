@@ -6,7 +6,7 @@
  * Time: 15:35
  */
 
-namespace Fikusas;
+namespace Fikusas\UserInteraction;
 
 
 class InputParameters

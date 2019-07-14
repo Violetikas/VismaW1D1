@@ -81,13 +81,11 @@
 //}
 
 
-
-
 namespace Fikusas\Cache;
 
 
 use DateInterval;
-use http\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -97,7 +95,7 @@ use Traversable;
 class FileCache implements CacheInterface
 {
     const PSR16RESERVED = '/\{|\}|\(|\)|\/|\\\\|\@|\:/u';
-    const INVALID_KEY_MESSAGE = "Key is not valid.";
+    const INVALID_KEY_MESSAGE = "Key is not valid: ";
     private $cachePath;
     private $defaultTTL;
     private $dirMode;
@@ -126,8 +124,8 @@ class FileCache implements CacheInterface
         $path = $this->getPath($key);
         $expiresAt = @filemtime($path);
         if (!$this->validateKey($key)) {
-            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
-        else {
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);
+        } else {
 
             if ($expiresAt === false) {
                 return $default;
@@ -159,33 +157,33 @@ class FileCache implements CacheInterface
         $path = $this->getPath($key);
         $dir = dirname($path);
         if (!$this->validateKey($key)) {
-            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
-        else {
-        if (!file_exists($dir)) {
-            // ensure that the parent path exists:
-            $this->mkdir($dir);
-        }
-        $temp_path = $this->cachePath . DIRECTORY_SEPARATOR . uniqid('', true);
-        if (is_int($ttl)) {
-            $expires_at = $this->getTime() + $ttl;
-        } elseif ($ttl instanceof DateInterval) {
-            $expires_at = date_create_from_format("U", $this->getTime())->add($ttl)->getTimestamp();
-        } elseif ($ttl === null) {
-            $expires_at = $this->getTime() + $this->defaultTTL;
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);
         } else {
-            throw new InvalidArgumentException("invalid TTL: " . print_r($ttl, true));
-        }
-        if (false === @file_put_contents($temp_path, serialize($value))) {
+            if (!file_exists($dir)) {
+                // ensure that the parent path exists:
+                $this->mkdir($dir);
+            }
+            $temp_path = $this->cachePath . DIRECTORY_SEPARATOR . uniqid('', true);
+            if (is_int($ttl)) {
+                $expires_at = $this->getTime() + $ttl;
+            } elseif ($ttl instanceof DateInterval) {
+                $expires_at = date_create_from_format("U", $this->getTime())->add($ttl)->getTimestamp();
+            } elseif ($ttl === null) {
+                $expires_at = $this->getTime() + $this->defaultTTL;
+            } else {
+                throw new InvalidArgumentException("invalid TTL: " . print_r($ttl, true));
+            }
+            if (false === @file_put_contents($temp_path, serialize($value))) {
+                return false;
+            }
+            if (false === @chmod($temp_path, $this->fileMode)) {
+                return false;
+            }
+            if (@touch($temp_path, $expires_at) && @rename($temp_path, $path)) {
+                return true;
+            }
+            @unlink($temp_path);
             return false;
-        }
-        if (false === @chmod($temp_path, $this->fileMode)) {
-            return false;
-        }
-        if (@touch($temp_path, $expires_at) && @rename($temp_path, $path)) {
-            return true;
-        }
-        @unlink($temp_path);
-        return false;
         }
     }
 
@@ -253,9 +251,10 @@ class FileCache implements CacheInterface
     public function has($key)
     {
         if (!$this->validateKey($key)) {
-            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE);}
-
-        else return $this->get($key, $this) !== $this;
+            throw new InvalidArgumentException(self::INVALID_KEY_MESSAGE . $key);
+        } else {
+            return $this->get($key, $this) !== $this;
+        }
     }
 
     public function increment($key, $step = 1)

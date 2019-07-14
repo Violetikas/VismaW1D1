@@ -9,10 +9,10 @@ use Fikusas\UserInteraction\InputParameters;
 class FileReadFromInput
 {
 
-    public function fileReadFromInput(InputParameters $userInput)
+    public function fileReadFromInput(string $filePath)
     {
 
-        $whatever = file_get_contents($userInput->getUserInput());
+        $whatever = file_get_contents($filePath);
 
         $array = explode("\n",$whatever);
 

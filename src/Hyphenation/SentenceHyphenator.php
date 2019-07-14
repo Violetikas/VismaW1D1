@@ -37,10 +37,7 @@ class SentenceHyphenator
             }
             $result .= substr($sentence, $offset);
             $this->logger->notice("Sentence '{sentence}'hyphenated to '{result}'", array('sentence' => $sentence, 'result' => $result));
-
-
         }
-
         return $result;
     }
 

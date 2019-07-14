@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
+
 use Psr\SimpleCache\CacheInterface;
 
 class WordHyphenator
@@ -54,7 +55,8 @@ class WordHyphenator
                 $final .= $numbersInWord[$i];
             }
         }
-        return $this->printResult($final);
+        $hyphenatedWord = $this->printResult($final);
+        return $hyphenatedWord;
     }
 
     private function extractNumbers(string $syllable): array
@@ -71,27 +73,27 @@ class WordHyphenator
         }
 
         return $result;
+
     }
 
     private function printResult(string $result): string
     {
-        $key=$result;
-        if (!$this->cache->has($key)){
-        for ($i = 0; $i < strlen($result); $i++) {
-            if (!is_numeric($result[$i])) {
-                continue;
+        $key = sha1($result);
+        if (!($result = $this->cache->get($key, $result))) {
+            for ($i = 0; $i < strlen($result); $i++) {
+                if (!is_numeric($result[$i])) {
+                    continue;
+                }
+                if (((int)$result[$i]) % 2 !== 0) {
+                    $result = str_replace($result[$i], '-', $result);
+                } else {
+                    $result = str_replace($result[$i], '', $result);
+                }
             }
-            if (((int)$result[$i]) % 2 !== 0) {
-                $result = str_replace($result[$i], '-', $result);
-            } else {
-                $result = str_replace($result[$i], '', $result);
-            }
-        }
-        $this->cache->set($key, $result);
-        return $result;
-
+            $this->cache->set($key, $result);
+            return $result;
         } else {
-            return $this->cache->get($key, $result);
+            return $result;
         }
 
     }

@@ -53,7 +53,13 @@ class OptionDivider
 
         if ($userOption == '-f'){
 
-            return $this->fileReadFromInput->fileReadFromInput($inputOption->getUserInput());
+            $words = $this->fileReadFromInput->fileReadFromInput($inputOption->getUserInput());
+            $hyphenatedWords=[];
+
+           foreach ($words as $word){
+               $hyphenatedWords[] = $this->hyphenator->hyphenate($word);
+           }
+           return $hyphenatedWords;
 
         }
 

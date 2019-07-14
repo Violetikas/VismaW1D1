@@ -9,27 +9,35 @@ declare(strict_types=1);
 
 namespace Fikusas\UserInteraction;
 
+use Fikusas\FileRead\FileRead;
+use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
 use RuntimeException;
 
 class OptionDivider
 {
-    /** @var WordHyphenator */
+
     private $hyphenator;
     private $sentenceHyphenator;
+    private $fileReader;
+    private $fileReadFromInput;
 
     /**
      * OptionDivider constructor.
-     * @param WordHyphenator $hyphenator
-     * @param SentenceHyphenator $sentenceHyphenator
+     * @param $hyphenator
+     * @param $sentenceHyphenator
+     * @param $fileReader
+     * @param $fileReadFromInput
      */
-    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator)
+    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileRead $fileReader, FileReadFromInput $fileReadFromInput)
     {
         $this->hyphenator = $hyphenator;
         $this->sentenceHyphenator = $sentenceHyphenator;
-
+        $this->fileReader = $fileReader;
+        $this->fileReadFromInput = $fileReadFromInput;
     }
+
 
     public function divideOptions(InputParameters $inputOption)
     {
@@ -41,6 +49,12 @@ class OptionDivider
         if ($userOption == '-s') {
 
             return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
+        }
+
+        if ($userOption == '-f'){
+
+            return $this->fileReadFromInput->fileReadFromInput($inputOption->getUserInput());
+
         }
 
         throw new RuntimeException('Missing option');

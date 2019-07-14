@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Fikusas\FileRead;
 
-
 use Psr\SimpleCache\CacheInterface;
+
 
 class FileRead
 {
     const FILEPATH = "tex-hyphenation-patterns.txt";
     private $cache;
 
+
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
+
     }
 
     public function readHyphenationPatterns($path = self::FILEPATH): array
@@ -29,6 +31,7 @@ class FileRead
             return $this->cache->get("pattern");
         }
     }
+
 }
 
 

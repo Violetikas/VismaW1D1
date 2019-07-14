@@ -7,6 +7,7 @@ namespace Fikusas;
 
 use Fikusas\Cache;
 use Fikusas\FileRead\FileRead;
+use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
 use Fikusas\Log;
@@ -14,6 +15,30 @@ use Fikusas\UserInteraction;
 
 class Main
 {
+//    private $logger;
+//    private $cache;
+//    private $fileReader;
+//    private $syllables;
+//    private $userInteraction;
+//
+//    /**
+//     * Main constructor.
+//     * @param $logger
+//     * @param $cache
+//     * @param $fileReader
+//     * @param $syllables
+//     * @param $userInteraction
+//     */
+//    public function __construct($logger, $cache, $fileReader, $syllables, $userInteraction)
+//    {
+//        $this->logger = $logger;
+//        $this->cache = $cache;
+//        $this->fileReader = $fileReader;
+//        $this->syllables = $syllables;
+//        $this->userInteraction = $userInteraction;
+//    }
+
+
     public function startTime()
     {
         $timeStart = microtime(true);
@@ -39,7 +64,9 @@ class Main
 
         $sentenceHyphenator = new SentenceHyphenator($logger, $hyphenate);
 
-        $optionDivider = new UserInteraction\OptionDivider($hyphenate, $sentenceHyphenator);
+        $fileReadFromInput = new FileReadFromInput();
+
+        $optionDivider = new UserInteraction\OptionDivider($hyphenate, $sentenceHyphenator, $fileReader, $fileReadFromInput);
 
         $result = $optionDivider->divideOptions($userInput);
 

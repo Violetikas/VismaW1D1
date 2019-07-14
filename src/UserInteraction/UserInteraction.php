@@ -16,7 +16,7 @@ class UserInteraction
     {
         if (count($argv) < 2) {
 
-            echo "Use commands:\n $argv[0] -w [userInput]\n $argv[0] -s [sentence]\n";
+            echo "Use commands:\n $argv[0] -w [userInput]\n $argv[0] -s ['sentence']\n $argv[0] -f ['file path']\n";
             return null;
         } else {
             if (isset($argv[1]) && isset($argv[2])) {
@@ -32,3 +32,6 @@ class UserInteraction
      */
 
 }
+
+
+

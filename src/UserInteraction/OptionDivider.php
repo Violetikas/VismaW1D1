@@ -51,20 +51,26 @@ class OptionDivider
             return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
         }
 
-        if ($userOption == '-f'){
+        if ($userOption == '-f') {
 
             $words = $this->fileReadFromInput->fileReadFromInput($inputOption->getUserInput());
-            $hyphenatedWords=[];
+            $hyphenatedWords = [];
 
-           foreach ($words as $word){
-               $hyphenatedWords[] = $this->hyphenator->hyphenate($word);
-           }
-           return $hyphenatedWords;
+            foreach ($words as $word) {
+                $hyphenatedWords[] = $this->hyphenator->hyphenate($word);
+            }
+            foreach ($hyphenatedWords as $hyphenatedWord) {
+                echo $hyphenatedWord . "\n";
+            }
 
         }
 
-        throw new RuntimeException('Missing option');
+        else  throw new RuntimeException('Missing option');
+
+
 
     }
+
+
 
 }

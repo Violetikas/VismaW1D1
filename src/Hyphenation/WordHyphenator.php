@@ -9,7 +9,6 @@
 declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
-
 use Psr\SimpleCache\CacheInterface;
 
 class WordHyphenator
@@ -55,8 +54,7 @@ class WordHyphenator
                 $final .= $numbersInWord[$i];
             }
         }
-        $hyphenatedWord = $this->printResult($final);
-        return $hyphenatedWord;
+        return $this->printResult($final);
     }
 
     private function extractNumbers(string $syllable): array
@@ -73,13 +71,12 @@ class WordHyphenator
         }
 
         return $result;
-
     }
 
     private function printResult(string $result): string
     {
-        $key = sha1($result);
-        if (!($result = $this->cache->get($key, $result))) {
+        $key=sha1($result);
+        if (!$this->cache->has($key)){
             for ($i = 0; $i < strlen($result); $i++) {
                 if (!is_numeric($result[$i])) {
                     continue;
@@ -92,9 +89,11 @@ class WordHyphenator
             }
             $this->cache->set($key, $result);
             return $result;
+
         } else {
-            return $result;
+            return $this->cache->get($key, $result);
         }
 
     }
 }
+

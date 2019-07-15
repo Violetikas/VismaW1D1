@@ -39,6 +39,10 @@ class OptionDivider
     }
 
 
+    /**
+     * @param InputParameters $inputOption
+     * @return string
+     */
     public function divideOptions(InputParameters $inputOption)
     {
         $userOption = $inputOption->getUserOption();
@@ -63,14 +67,9 @@ class OptionDivider
                 echo $hyphenatedWord . "\n";
             }
 
-        }
-
-        else  throw new RuntimeException('Missing option');
-
-
+        } else  throw new RuntimeException('Missing option');
 
     }
-
 
 
 }

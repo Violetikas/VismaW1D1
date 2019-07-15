@@ -16,6 +16,11 @@ class SentenceHyphenator
     protected $hyphenator;
     private $logger;
 
+    /**
+     * SentenceHyphenator constructor.
+     * @param LoggerInterface $logger
+     * @param \Fikusas\Hyphenation\WordHyphenator $hyphenator
+     */
     public function __construct(LoggerInterface $logger, WordHyphenator $hyphenator)
     {
         $this->logger = $logger;
@@ -23,6 +28,10 @@ class SentenceHyphenator
 
     }
 
+    /**
+     * @param string $sentence
+     * @return string
+     */
     public function hyphenateSentence(string $sentence): string
     {
         $result = '';

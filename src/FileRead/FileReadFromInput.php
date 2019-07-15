@@ -3,18 +3,29 @@
 
 namespace Fikusas\FileRead;
 
-
-use Fikusas\UserInteraction\InputParameters;
+use PDO;
 
 class FileReadFromInput
 {
+    private $pdo;
 
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    /**
+     * @param string $filePath
+     * @return array
+     */
     public function fileReadFromInput(string $filePath)
     {
 
-        $whatever = file_get_contents($filePath);
 
-        $array = explode("\n",$whatever);
+        $contents = file_get_contents($filePath);
+
+        $array = explode("\n", $contents);
 
         return $array;
     }

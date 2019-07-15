@@ -16,12 +16,22 @@ class WordHyphenator
     private $syllables;
     private $cache;
 
+    /**
+     * WordHyphenator constructor.
+     * @param array $syllables
+     * @param CacheInterface $cache
+     */
     public function __construct(array $syllables, CacheInterface $cache)
     {
         $this->syllables = $syllables;
         $this->cache = $cache;
     }
 
+    /**
+     * @param string $word
+     * @return string
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function hyphenate(string $word): string
     {
         $numbersInWord = [];
@@ -57,6 +67,10 @@ class WordHyphenator
         return $this->printResult($final);
     }
 
+    /**
+     * @param string $syllable
+     * @return array
+     */
     private function extractNumbers(string $syllable): array
     {
         $result = [];
@@ -73,6 +87,11 @@ class WordHyphenator
         return $result;
     }
 
+    /**
+     * @param string $result
+     * @return string
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     private function printResult(string $result): string
     {
         $key=sha1($result);

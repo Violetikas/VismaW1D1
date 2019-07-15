@@ -13,12 +13,21 @@ class FileRead
     private $cache;
 
 
+    /**
+     * FileRead constructor.
+     * @param CacheInterface $cache
+     */
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
 
     }
 
+    /**
+     * @param string $path
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function readHyphenationPatterns($path = self::FILEPATH): array
     {
         $contents = file_get_contents($path);

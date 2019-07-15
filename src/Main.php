@@ -67,13 +67,17 @@ class Main
     }
 
 
+    /**
+     * @param $argv
+     * @return string
+     */
     public function mainApplication($argv)
     {
 
         $this->timeKeeping->startTime();
         $userInput = $this->userInteraction->getUserInput($argv);
         $result=$this->optionDivider->divideOptions($userInput);
-        $this->logger->info(sprintf("Completed in %.2f seconds", $this->timeKeeping->stopTime()));
+        $this->logger->info(sprintf("Completed in %.6f seconds", $this->timeKeeping->stopTime()));
         return $result;
 
     }

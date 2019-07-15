@@ -12,6 +12,10 @@ namespace Fikusas\UserInteraction;
 
 class UserInteraction
 {
+    /**
+     * @param $argv
+     * @return InputParameters|null
+     */
     public function getUserInput($argv): ?InputParameters
     {
         if (count($argv) < 2) {
@@ -27,9 +31,6 @@ class UserInteraction
         }
     }
 
-    /**
-     * @param string $result
-     */
 
 }
 

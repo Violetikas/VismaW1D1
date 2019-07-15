@@ -6,6 +6,7 @@ namespace Fikusas\DB;
 use Fikusas\FileRead\FileRead;
 use Config\DBConfig;
 use PDO;
+use PDOException;
 
 
 class PatternDB
@@ -33,10 +34,24 @@ class PatternDB
     public function writePatternsToDB(){
 
         $this->dbConfig->connectToDB();
-        $this->pdo->query("CREATE TABLE `Visma1`.`Words_from_file` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-        `words` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`(6))) ENGINE = InnoDB;");
+        $this->pdo->query("CREATE TABLE `Visma1`.`Patterns` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
+        `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`(6))) ENGINE = InnoDB;");
 
-
+        $data = $this->fileRead->readHyphenationPatterns();
+        $stmt = $pdo->prepare("INSERT INTO Patterns (id, patterns) VALUES (?,?)");
+        try {
+            $pdo->beginTransaction();
+            foreach ($data as $row)
+            {
+                $stmt->$pdo->execute($row);
+            }
+            $pdo->commit();
+        }catch (PDOException $exception){
+            $pdo->rollback();
+            throw $exception;
+        }
 
     }
 }
+
+

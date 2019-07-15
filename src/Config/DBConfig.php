@@ -9,18 +9,20 @@ use PDOException;
 
 class DBConfig
 {
-
     private $host = 'localhost';
+
     private $db_name = 'Visma1';
+
     private $db_username = 'root';
+
     private $db_password = 'violetatama';
+
     private $pdo;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
-
 
     public function connectToDB()
     {

@@ -12,10 +12,6 @@ use Fikusas\TimeKeeping\TimeKeeping;
 use Fikusas\Cache\FileCache;
 
 
-//require_once 'config.php';
-//require_once DataBaseConnect::class;
-//$db = new ($pdo);
-//$rows = $db->getData();
 
 $cache = new FileCache('cache', 86400);
 $fileRead = new FileRead($cache);

@@ -3,17 +3,11 @@
 
 namespace Fikusas\FileRead;
 
-use PDO;
 
 class FileReadFromInput
 {
-    private $pdo;
 
 
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
 
     /**
      * @param string $filePath

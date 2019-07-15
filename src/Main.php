@@ -5,19 +5,18 @@ declare(strict_types=1);
 
 namespace Fikusas;
 
-use Fikusas\Cache;
+use Fikusas\Cache\FileCache;
 use Fikusas\FileRead\FileRead;
 use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
-use Fikusas\Log;
-use Fikusas\UserInteraction;
+use Fikusas\Log\Logger;
+use Fikusas\UserInteraction\OptionDivider;
+use Fikusas\UserInteraction\UserInteraction;
 use Fikusas\TimeKeeping\TimeKeeping;
-use Psr\SimpleCache\CacheInterface;
 
 class Main
 {
-
 
     private $timeKeeping;
     private $logger;
@@ -28,7 +27,7 @@ class Main
     private $sentenceHyphenator;
     private $fileReadFromInput;
     private $optionDivider;
-
+    private $wordHyphenator;
 
     /**
      * Main constructor.
@@ -41,18 +40,20 @@ class Main
      * @param $sentenceHyphenator
      * @param $fileReadFromInput
      * @param $optionDivider
+     * @param $wordHyphenator
      */
     public function __construct(
         TimeKeeping $timeKeeping,
-        Log\Logger $logger,
-        CacheInterface $cache,
+        Logger $logger,
+        FileCache $cache,
         FileRead $fileReader,
-        UserInteraction\UserInteraction $userInteraction,
+        UserInteraction $userInteraction,
         WordHyphenator $hyphenate,
         SentenceHyphenator $sentenceHyphenator,
         FileReadFromInput $fileReadFromInput,
-        UserInteraction\OptionDivider $optionDivider
-    ) {
+        OptionDivider $optionDivider,
+        WordHyphenator $wordHyphenator)
+    {
         $this->timeKeeping = $timeKeeping;
         $this->logger = $logger;
         $this->cache = $cache;
@@ -62,15 +63,18 @@ class Main
         $this->sentenceHyphenator = $sentenceHyphenator;
         $this->fileReadFromInput = $fileReadFromInput;
         $this->optionDivider = $optionDivider;
+        $this->wordHyphenator = $wordHyphenator;
     }
 
 
     public function mainApplication($argv)
     {
+
         $this->timeKeeping->startTime();
-        $this->fileReader->readHyphenationPatterns();
-
-
+        $userInput = $this->userInteraction->getUserInput($argv);
+        $result=$this->optionDivider->divideOptions($userInput);
+        $this->logger->info(sprintf("Completed in %.2f seconds", $this->timeKeeping->stopTime()));
         return $result;
+
     }
 }

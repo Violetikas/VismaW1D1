@@ -12,6 +12,7 @@ use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
 use Fikusas\Log\Logger;
+use Fikusas\Patterns\PatternLoaderFile;
 use Fikusas\UserInteraction\OptionDivider;
 use Fikusas\UserInteraction\UserInteraction;
 use Fikusas\TimeKeeping\TimeKeeping;
@@ -21,7 +22,6 @@ class Main
 {
     private $timeKeeping;
     private $logger;
-    private $optionDivider;
     private $input;
 
     public function __construct()
@@ -29,10 +29,6 @@ class Main
         $this->input = new UserInteraction();
         $this->timeKeeping = new TimeKeeping();
         $this->logger = new Logger();
-        $cache = new FileCache('cache', 86400);
-        $fileReader = new FileRead($cache);
-        $hyphenate = new WordHyphenator($fileReader->readHyphenationPatterns($cache), $cache);
-        $this->optionDivider = new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output());
     }
 
     /**
@@ -46,7 +42,17 @@ class Main
         $this->timeKeeping->startTime();
         $userInput = $this->input->getUserInput($argv);
         $config = JsonConfigLoader::load('config.json');
-        $this->optionDivider->divideOptions($userInput);
+        $optionDivider = $this->createOptionDivider($config);
+        $optionDivider->divideOptions($userInput);
         $this->logger->info(sprintf('Completed in %.6f seconds', $this->timeKeeping->stopTime()));
+    }
+
+    private function createOptionDivider(Config\ConfigInterface $config): OptionDivider
+    {
+        $cache = new FileCache('cache', 86400);
+        $loader = new PatternLoaderFile($config->getParameter('patterns_file'));
+        $hyphenate = new WordHyphenator($loader, $cache);
+        return new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output());
+
     }
 }

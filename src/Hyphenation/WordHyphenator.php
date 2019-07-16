@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
+use Fikusas\Patterns\PatternLoaderInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class WordHyphenator
@@ -18,12 +19,12 @@ class WordHyphenator
 
     /**
      * WordHyphenator constructor.
-     * @param array $syllables
+     * @param PatternLoaderInterface $loader
      * @param CacheInterface $cache
      */
-    public function __construct(array $syllables, CacheInterface $cache)
+    public function __construct(PatternLoaderInterface $loader, CacheInterface $cache)
     {
-        $this->syllables = $syllables;
+        $this->syllables = $loader->loadPatterns();
         $this->cache = $cache;
     }
 

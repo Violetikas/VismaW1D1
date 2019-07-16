@@ -11,33 +11,23 @@ namespace Fikusas\UserInteraction;
 
 class InputParameters
 {
-    private $userOption;
-    private $userInput;
+    private $options;
 
     /**
      * InputParameters constructor.
-     * @param $userOption
-     * @param $userInput
+     * @param array $options
      */
-    public function __construct($userOption, $userInput)
+    public function __construct(array $options)
     {
-        $this->userOption = $userOption;
-        $this->userInput = $userInput;
+        $this->options = $options;
     }
 
     /**
+     * @param string $name
      * @return mixed
      */
-    public function getUserOption()
+    public function getOption(string $name)
     {
-        return $this->userOption;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUserInput()
-    {
-        return $this->userInput;
+        return $this->options[$name];
     }
 }

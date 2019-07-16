@@ -14,71 +14,37 @@ use Fikusas\Log\Logger;
 use Fikusas\UserInteraction\OptionDivider;
 use Fikusas\UserInteraction\UserInteraction;
 use Fikusas\TimeKeeping\TimeKeeping;
+use Fikusas\UserInteraction\Output;
 
 class Main
 {
-
     private $timeKeeping;
     private $logger;
-    private $cache;
-    private $fileReader;
-    private $userInteraction;
-    private $hyphenate;
-    private $sentenceHyphenator;
-    private $fileReadFromInput;
     private $optionDivider;
-    private $wordHyphenator;
+    private $input;
 
-    /**
-     * Main constructor.
-     * @param $timeKeeping
-     * @param $logger
-     * @param $cache
-     * @param $fileReader
-     * @param $userInteraction
-     * @param $hyphenate
-     * @param $sentenceHyphenator
-     * @param $fileReadFromInput
-     * @param $optionDivider
-     * @param $wordHyphenator
-     */
-    public function __construct(
-        TimeKeeping $timeKeeping,
-        Logger $logger,
-        FileCache $cache,
-        FileRead $fileReader,
-        UserInteraction $userInteraction,
-        WordHyphenator $hyphenate,
-        SentenceHyphenator $sentenceHyphenator,
-        FileReadFromInput $fileReadFromInput,
-        OptionDivider $optionDivider,
-        WordHyphenator $wordHyphenator)
+    public function __construct()
     {
-        $this->timeKeeping = $timeKeeping;
-        $this->logger = $logger;
-        $this->cache = $cache;
-        $this->fileReader = $fileReader;
-        $this->userInteraction = $userInteraction;
-        $this->hyphenate = $hyphenate;
-        $this->sentenceHyphenator = $sentenceHyphenator;
-        $this->fileReadFromInput = $fileReadFromInput;
-        $this->optionDivider = $optionDivider;
-        $this->wordHyphenator = $wordHyphenator;
+        $this->input = new UserInteraction();
+        $this->timeKeeping = new TimeKeeping();
+        $this->logger = new Logger();
+        $cache = new FileCache('cache', 86400);
+        $fileReader = new FileRead($cache);
+        $hyphenate = new WordHyphenator($fileReader->readHyphenationPatterns($cache), $cache);
+        $this->optionDivider = new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output());
     }
 
-
     /**
-     * @param $argv
-     * @return string
+     * Run the application.
+     *
+     * @param array $argv Input arguments
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function mainApplication($argv)
+    public function run(array $argv): void
     {
-
         $this->timeKeeping->startTime();
-        $userInput = $this->userInteraction->getUserInput($argv);
-        $result=$this->optionDivider->divideOptions($userInput);
-        $this->logger->info(sprintf("Completed in %.6f seconds", $this->timeKeeping->stopTime()));
-        return $result;
-
+        $userInput = $this->input->getUserInput($argv);
+        $this->optionDivider->divideOptions($userInput);
+        $this->logger->info(sprintf('Completed in %.6f seconds', $this->timeKeeping->stopTime()));
     }
 }

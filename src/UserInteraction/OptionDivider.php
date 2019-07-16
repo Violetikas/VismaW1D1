@@ -20,55 +20,53 @@ class OptionDivider
 
     private $hyphenator;
     private $sentenceHyphenator;
-    private $fileReader;
     private $fileReadFromInput;
+    private $output;
 
     /**
      * OptionDivider constructor.
-     * @param $hyphenator
-     * @param $sentenceHyphenator
-     * @param $fileReader
-     * @param $fileReadFromInput
+     * @param WordHyphenator $hyphenator
+     * @param SentenceHyphenator $sentenceHyphenator
+     * @param FileReadFromInput $fileReadFromInput
+     * @param Output $output
      */
-    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileRead $fileReader, FileReadFromInput $fileReadFromInput)
+    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output)
     {
         $this->hyphenator = $hyphenator;
         $this->sentenceHyphenator = $sentenceHyphenator;
-        $this->fileReader = $fileReader;
         $this->fileReadFromInput = $fileReadFromInput;
+        $this->output = $output;
     }
 
 
     /**
      * @param InputParameters $inputOption
-     * @return string
+     * @return void
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function divideOptions(InputParameters $inputOption)
+    public function divideOptions(InputParameters $inputOption): void
     {
-        $userOption = $inputOption->getUserOption();
-        if ($userOption == '-w') {
-            return $this->hyphenator->hyphenate($inputOption->getUserInput());
+        if ($value = $inputOption->getOption('-w')) {
+            $this->output->writeLine($this->hyphenator->hyphenate($value));
+            return;
 
         }
-        if ($userOption == '-s') {
-
-            return $this->sentenceHyphenator->hyphenateSentence($inputOption->getUserInput());
+        if ($value = $inputOption->getOption('-s')) {
+            $this->output->writeLine($this->sentenceHyphenator->hyphenateSentence($value));
+            return;
         }
 
-        if ($userOption == '-f') {
-
-            $words = $this->fileReadFromInput->fileReadFromInput($inputOption->getUserInput());
-            $hyphenatedWords = [];
+        if ($value = $inputOption->getOption('-f')) {
+            $words = $this->fileReadFromInput->fileReadFromInput($value);
 
             foreach ($words as $word) {
-                $hyphenatedWords[] = $this->hyphenator->hyphenate($word);
+                $this->output->writeLine($this->hyphenator->hyphenate($word));
             }
-            foreach ($hyphenatedWords as $hyphenatedWord) {
-                echo $hyphenatedWord . "\n";
-            }
+            return;
 
-        } else  throw new RuntimeException('Missing option');
+        }
 
+        throw new RuntimeException('Missing option');
     }
 
 

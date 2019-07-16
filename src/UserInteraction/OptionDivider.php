@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Fikusas\UserInteraction;
 
 use Fikusas\DB\PatternDB;
+use Fikusas\DB\WordDB;
 use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
@@ -27,6 +28,7 @@ class OptionDivider
      * @var PatternDB
      */
     private $db;
+    private $wdb;
 
     /**
      * OptionDivider constructor.
@@ -36,13 +38,14 @@ class OptionDivider
      * @param Output $output
      * @param PatternDB $db
      */
-    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output, PatternDB $db)
+    public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output, PatternDB $db, WordDB $wdb)
     {
         $this->hyphenator = $hyphenator;
         $this->sentenceHyphenator = $sentenceHyphenator;
         $this->fileReadFromInput = $fileReadFromInput;
         $this->output = $output;
         $this->db = $db;
+        $this->wdb = $wdb;
     }
 
 
@@ -65,6 +68,7 @@ class OptionDivider
 
         if ($value = $inputOption->getOption('-f')) {
             $words = $this->fileReadFromInput->fileReadFromInput($value);
+            $this->wdb->writeWordsToDB($words);
 
             foreach ($words as $word) {
                 $this->output->writeLine($this->hyphenator->hyphenate($word));

@@ -9,6 +9,7 @@ use Fikusas\DB\DatabaseConnector;
 use Fikusas\Cache\FileCache;
 use Fikusas\Config\JsonConfigLoader;
 use Fikusas\DB\PatternDB;
+use Fikusas\DB\WordDB;
 use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Hyphenation\SentenceHyphenator;
@@ -53,7 +54,7 @@ class Main
         $cache = new FileCache('cache', 86400);
         $loader = new PatternLoaderFile($config->getParameter('patterns_file'));
         $hyphenate = new WordHyphenator($loader, $cache);
-        return new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output(), new PatternDB(new DatabaseConnector($config)));
+        return new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output(), new PatternDB(new DatabaseConnector($config)), new WordDB(new DatabaseConnector($config)));
 
     }
 }

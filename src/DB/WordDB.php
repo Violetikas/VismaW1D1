@@ -5,8 +5,7 @@ namespace Fikusas\DB;
 
 use PDOException;
 
-
-class PatternDB
+class WordDB
 {
     private $dbConfig;
 
@@ -19,16 +18,17 @@ class PatternDB
         $this->dbConfig = $dbConfig;
     }
 
-    public function writePatternsToDB(array $patterns): void
+    public function writeWordsToDB (array $words):void
     {
-        $pdo = $this->dbConfig->getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO Patterns (patterns) VALUES (?)");
+        $pdo = $this->dbConfig->getConnection();
+        $stmt = $pdo->prepare("INSERT INTO Words_from_file (words) VALUES (?)");
+
 
         try {
             $pdo->beginTransaction();
-            foreach ($patterns as $row) {
-                $stmt->execute([$row]);
+            foreach ($words as $word) {
+                $stmt->execute([$word]);
             }
             $pdo->commit();
         } catch (PDOException $exception) {
@@ -36,4 +36,5 @@ class PatternDB
             throw $exception;
         }
     }
+
 }

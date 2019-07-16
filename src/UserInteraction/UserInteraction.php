@@ -19,7 +19,8 @@ class UserInteraction
         $this->options = [
             '-w',
             '-s',
-            '-f'
+            '-f',
+            '-l'
         ];
     }
 
@@ -52,13 +53,14 @@ class UserInteraction
         echo <<<EOF
 Usage:
     
-    php application.php [ -w word ] [ -s sentence ] [ -f path ]
+    php application.php [ -w word ] [ -s sentence ] [ -f path ] [ -l path ]
     
 Arguments:
 
     -w word      Hyphenate given word
     -s sentence  Hyphenate given sentence
     -f path      Hyphenate words from given file
+    -l path      Load patterns from file to DB
 EOF;
     }
 }

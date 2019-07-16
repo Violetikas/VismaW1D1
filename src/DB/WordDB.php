@@ -18,17 +18,17 @@ class WordDB
         $this->dbConfig = $dbConfig;
     }
 
-    public function writeWordsToDB (array $words):void
+    public function writeWordsToDB (array $words, array $hyphenatedWords):void
     {
 
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare("INSERT INTO Words_from_file (words) VALUES (?)");
+        $stmt = $pdo->prepare("INSERT INTO Words(words, hyphenatedWords) VALUES (?,?)");
 
 
         try {
             $pdo->beginTransaction();
-            foreach ($words as $word) {
-                $stmt->execute([$word]);
+            for ($i=0; $i<count($words);$i++) {
+                $stmt->execute([$words[$i],$hyphenatedWords[$i]]);
             }
             $pdo->commit();
         } catch (PDOException $exception) {

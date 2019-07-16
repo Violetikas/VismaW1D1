@@ -49,12 +49,12 @@ class DatabaseConnector
 
     private function initDB(): void
     {
-        $this->pdo->query("CREATE TABLE IF NOT EXISTS `Words_from_file` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-        `words` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+        $this->pdo->query("CREATE TABLE `Visma1`.`Words` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
+                          `words` VARCHAR(255) NOT NULL , `hyphenatedWords` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB; ");
         $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns (`id` INT(6) NOT NULL AUTO_INCREMENT ,
-         `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-        $this->pdo->query("CREATE TABLE IF NOT EXISTS 'Hyphenated Words' ('id' INT(6) NOT NULL AUTO_INCREMENT ,
-        'hyphenated_words' VARCHAR(255)NOT NULL, PRIMARY KEY ('id') ) ENGINE = InnoDB;");
+                          `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+//        $this->pdo->query("CREATE TABLE IF NOT EXISTS 'Hyphenated Words' ('id' INT(6) NOT NULL AUTO_INCREMENT ,
+//        'hyphenated_words' VARCHAR(255)NOT NULL, PRIMARY KEY ('id') ) ENGINE = InnoDB;");
 
         // TODO: create all tables
     }

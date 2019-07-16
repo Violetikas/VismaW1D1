@@ -68,11 +68,14 @@ class OptionDivider
 
         if ($value = $inputOption->getOption('-f')) {
             $words = $this->fileReadFromInput->fileReadFromInput($value);
-            $this->wdb->writeWordsToDB($words);
+            $hyphenatedWords =[];
 
             foreach ($words as $word) {
-                $this->output->writeLine($this->hyphenator->hyphenate($word));
+                $hyphenatedWord = $this->hyphenator->hyphenate($word);
+                $this->output->writeLine($hyphenatedWord);
+                array_push($hyphenatedWords,$hyphenatedWord);
             }
+            $this->wdb->writeWordsToDB($words,$hyphenatedWords);
             return;
 
         }

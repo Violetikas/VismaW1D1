@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Fikusas;
 
 use Fikusas\Cache\FileCache;
+use Fikusas\Config\JsonConfigLoader;
 use Fikusas\FileRead\FileRead;
 use Fikusas\FileRead\FileReadFromInput;
 use Fikusas\Hyphenation\WordHyphenator;
@@ -44,6 +45,7 @@ class Main
     {
         $this->timeKeeping->startTime();
         $userInput = $this->input->getUserInput($argv);
+        $config = JsonConfigLoader::load('config.json');
         $this->optionDivider->divideOptions($userInput);
         $this->logger->info(sprintf('Completed in %.6f seconds', $this->timeKeeping->stopTime()));
     }

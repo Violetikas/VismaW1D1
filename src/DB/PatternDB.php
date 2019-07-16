@@ -23,7 +23,9 @@ class PatternDB
     {
         $pdo = $this->dbConfig->getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO Patterns (id, patterns) VALUES (?,?)");
+        $stmt = $pdo->prepare("INSERT INTO Patterns (patterns) VALUES (?)");
+
+        //                              INSERT INTO `Patterns`(`id`, `patterns`) VALUES ([value-1],[value-2]
         try {
             $pdo->beginTransaction();
             foreach ($patterns as $row) {

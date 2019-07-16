@@ -79,7 +79,7 @@ class OptionDivider
             $this->db->writePatternsToDB($patterns);
         }
 
-        throw new RuntimeException('Missing option');
+       else throw new RuntimeException('Missing option');
     }
 
 

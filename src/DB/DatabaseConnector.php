@@ -51,8 +51,7 @@ class DatabaseConnector
     {
         $this->pdo->query("CREATE TABLE IF NOT EXISTS `Words_from_file` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
         `words` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-        $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-        `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+        $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns (`id` INT(6) NOT NULL AUTO_INCREMENT ,`patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
         // TODO: create all tables
     }
 }

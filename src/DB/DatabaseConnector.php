@@ -23,12 +23,20 @@ class DatabaseConnector
         $this->config = $config;
     }
 
+    /**
+     * @return PDO
+     * @throws \Fikusas\Config\Error\ParameterNotFoundError
+     */
     public function getConnection(): PDO
     {
+
         if (!$this->pdo) {
             $this->pdo = new PDO(
-                $this->config->getParameter('db_host'),
-                $this->config->getParameter('db_name'),
+                sprintf(
+                    'mysql:host=%s;dbname=%s',
+                    $this->config->getParameter('db_host'),
+                    $this->config->getParameter('db_name')
+                ),
                 $this->config->getParameter('db_username'),
                 $this->config->getParameter('db_password')
             );
@@ -42,9 +50,9 @@ class DatabaseConnector
     private function initDB(): void
     {
         $this->pdo->query("CREATE TABLE IF NOT EXISTS `Words_from_file` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-        `words` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`(6))) ENGINE = InnoDB;");
-        $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-        `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`(6))) ENGINE = InnoDB;");
+        `words` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+        $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
+        `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
         // TODO: create all tables
     }
 }

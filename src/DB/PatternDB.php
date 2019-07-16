@@ -27,7 +27,7 @@ class PatternDB
         try {
             $pdo->beginTransaction();
             foreach ($patterns as $row) {
-                $stmt->execute($row);
+                $stmt->execute([$row]);
             }
             $pdo->commit();
         } catch (PDOException $exception) {

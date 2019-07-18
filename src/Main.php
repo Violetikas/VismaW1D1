@@ -53,8 +53,10 @@ class Main
     {
         $cache = new FileCache('cache', 86400);
         $loader = new PatternLoaderFile($config->getParameter('patterns_file'));
-        $hyphenate = new WordHyphenator($loader, $cache);
-        return new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate), new FileReadFromInput(), new Output(), new PatternDB(new DatabaseConnector($config)), new WordDB(new DatabaseConnector($config)));
-
+        $wdb = new WordDB(new DatabaseConnector($config));
+        $db = new DatabaseConnector($config);
+        $hyphenate = new WordHyphenator($loader, $cache, $db);
+        return new OptionDivider($hyphenate, new SentenceHyphenator($this->logger, $hyphenate),
+            new FileReadFromInput(), new Output(), new PatternDB(new DatabaseConnector($config)), $wdb);
     }
 }

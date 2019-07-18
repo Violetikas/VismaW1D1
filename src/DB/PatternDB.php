@@ -23,10 +23,12 @@ class PatternDB
     {
         $pdo = $this->dbConfig->getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO Patterns (patterns) VALUES (?)");
+        $stmt = $pdo->prepare("INSERT INTO Patterns (pattern) VALUES (?)");
 
         try {
             $pdo->beginTransaction();
+            $pdo->exec("DELETE FROM `Patterns`");
+            $pdo->exec("DELETE FROM `Words`");
             foreach ($patterns as $row) {
                 $stmt->execute([$row]);
             }

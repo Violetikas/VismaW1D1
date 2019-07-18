@@ -24,9 +24,6 @@ class OptionDivider
     private $sentenceHyphenator;
     private $fileReadFromInput;
     private $output;
-    /**
-     * @var PatternDB
-     */
     private $db;
     private $wdb;
 
@@ -37,6 +34,7 @@ class OptionDivider
      * @param FileReadFromInput $fileReadFromInput
      * @param Output $output
      * @param PatternDB $db
+     * @param WordDB $wdb
      */
     public function __construct(WordHyphenator $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output, PatternDB $db, WordDB $wdb)
     {
@@ -57,7 +55,10 @@ class OptionDivider
     public function divideOptions(InputParameters $inputOption): void
     {
         if ($value = $inputOption->getOption('-w')) {
+            $hyphenatedWord = $this->hyphenator->hyphenate($value);
+            $this->wdb->writeWordToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
+            $this->wdb->getWordAndPatterns($value);
             return;
 
         }
@@ -68,14 +69,14 @@ class OptionDivider
 
         if ($value = $inputOption->getOption('-f')) {
             $words = $this->fileReadFromInput->fileReadFromInput($value);
-            $hyphenatedWords =[];
+            $hyphenatedWords = [];
 
             foreach ($words as $word) {
                 $hyphenatedWord = $this->hyphenator->hyphenate($word);
                 $this->output->writeLine($hyphenatedWord);
-                array_push($hyphenatedWords,$hyphenatedWord);
+                array_push($hyphenatedWords, $hyphenatedWord);
             }
-            $this->wdb->writeWordsToDB($words,$hyphenatedWords);
+            $this->wdb->writeWordsToDB($words, $hyphenatedWords);
             return;
 
         }
@@ -84,10 +85,19 @@ class OptionDivider
             $loader = new PatternLoaderFile($value);
             $patterns = $loader->loadPatterns();
             $this->db->writePatternsToDB($patterns);
-        }
-
-       else throw new RuntimeException('Missing option');
+        } else throw new RuntimeException('Missing option');
     }
 
+    public function getWord(InputParameters $inputOption)
+    {
+
+        if ($value = $inputOption->getOption('-w')) {
+
+            $this->output->writeLine($this->hyphenator->hyphenate($value));
+            return;
+
+        }
+
+    }
 
 }

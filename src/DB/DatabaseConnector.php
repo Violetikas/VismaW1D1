@@ -5,7 +5,10 @@ namespace Fikusas\DB;
 
 
 use Fikusas\Config\ConfigInterface;
+use Fikusas\Log\Logger;
 use PDO;
+use Psr\Log\LoggerInterface;
+
 
 class DatabaseConnector
 {
@@ -13,6 +16,7 @@ class DatabaseConnector
     private $pdo;
     /** @var ConfigInterface */
     private $config;
+
 
     /**
      * DatabaseConnector constructor.
@@ -22,6 +26,7 @@ class DatabaseConnector
     {
         $this->config = $config;
     }
+
 
     /**
      * @return PDO
@@ -49,13 +54,11 @@ class DatabaseConnector
 
     private function initDB(): void
     {
-        $this->pdo->query("CREATE TABLE `Visma1`.`Words` ( `id` INT(6) NOT NULL AUTO_INCREMENT ,
-                          `words` VARCHAR(255) NOT NULL , `hyphenatedWords` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB; ");
-        $this->pdo->query("CREATE TABLE IF NOT EXISTS Patterns (`id` INT(6) NOT NULL AUTO_INCREMENT ,
-                          `patterns` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-//        $this->pdo->query("CREATE TABLE IF NOT EXISTS 'Hyphenated Words' ('id' INT(6) NOT NULL AUTO_INCREMENT ,
-//        'hyphenated_words' VARCHAR(255)NOT NULL, PRIMARY KEY ('id') ) ENGINE = InnoDB;");
-
-        // TODO: create all tables
-    }
+        $queries = @file_get_contents('database.sql');
+            if ($queries === false) {
+                $logger = new Logger();
+                $logger->critical("Cannot execute SQL query. Rollback changes.");
+            }
+            $this->pdo->exec($queries);
+        }
 }

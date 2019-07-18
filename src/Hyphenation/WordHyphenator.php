@@ -9,23 +9,37 @@
 declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
+
+use Fikusas\DB\WordDB;
 use Fikusas\Patterns\PatternLoaderInterface;
 use Psr\SimpleCache\CacheInterface;
+use Fikusas\DB\DatabaseConnector;
 
+/**
+ * Class WordHyphenator
+ * @package Fikusas\Hyphenation
+ */
 class WordHyphenator
 {
+
     private $syllables;
     private $cache;
+    private $wordDB;
+    private $dbConfig;
+
 
     /**
      * WordHyphenator constructor.
      * @param PatternLoaderInterface $loader
      * @param CacheInterface $cache
+     * @param DatabaseConnector $dbConfig
      */
-    public function __construct(PatternLoaderInterface $loader, CacheInterface $cache)
+    public function __construct(PatternLoaderInterface $loader, CacheInterface $cache, DatabaseConnector $dbConfig)
     {
         $this->syllables = $loader->loadPatterns();
         $this->cache = $cache;
+        $this->dbConfig = $dbConfig;
+        $this->wordDB = new WordDB($dbConfig);
     }
 
     /**
@@ -36,7 +50,7 @@ class WordHyphenator
     public function hyphenate(string $word): string
     {
         $numbersInWord = [];
-
+        $syllables = [];
 
         foreach ($this->syllables as $syllable) {
             $toFind = preg_replace('/[\d.]/', '', $syllable);
@@ -50,6 +64,7 @@ class WordHyphenator
             if (($syllable[strlen($syllable) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
                 continue;
             }
+            $syllables[] = $syllable;
             $numbers = $this->extractNumbers($syllable);
             foreach ($numbers as $position1 => $number) {
                 $position1 = $position1 + $position;
@@ -65,8 +80,11 @@ class WordHyphenator
                 $final .= $numbersInWord[$i];
             }
         }
-        return $this->printResult($final);
+        $this->storeWord($word);
+        $this->storeSyllables($word, $syllables);
+        return $this->printResult($final, $word);
     }
+
 
     /**
      * @param string $syllable
@@ -84,7 +102,6 @@ class WordHyphenator
                 $result[$position] = (int)$number;
             }
         }
-
         return $result;
     }
 
@@ -93,10 +110,15 @@ class WordHyphenator
      * @return string
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    private function printResult(string $result): string
+    private function printResult(string $result, string $word): string
     {
-        $key=sha1($result);
-        if (!$this->cache->has($key)){
+        $key = sha1($result);
+        $foundInDB = $this->wordDB->isWordSavedToDB($word);
+        if ($this->cache->has($key)) {
+            return $this->cache->get($key, $result);
+        } else if ($foundInDB) {
+            return $this->wordDB->getHyphenatedWordFromDB($word);
+        } else {
             for ($i = 0; $i < strlen($result); $i++) {
                 if (!is_numeric($result[$i])) {
                     continue;
@@ -109,11 +131,22 @@ class WordHyphenator
             }
             $this->cache->set($key, $result);
             return $result;
-
-        } else {
-            return $this->cache->get($key, $result);
         }
 
+    }
+
+    /**
+     * @param string $word
+     * @param array $syllables
+     */
+    private function storeSyllables(string $word, array $syllables)
+    {
+        $this->wordDB->storeWordSyllables($word, $syllables);
+    }
+
+    private function storeWord(string $word)
+    {
+        $this->wordDB->isWordSavedToDB($word);
     }
 }
 

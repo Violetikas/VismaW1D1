@@ -4,7 +4,7 @@ Visma first assignment
 
 Usage:
     
-    php application.php [ -w word ][ -p word ] [ -s sentence ] [ -f path ] [ -l path ] [ -d path ]
+    php application.php [ -w word ][ -p word ] [ -s sentence ] [ -f path ] [ -l path ] [ -d ]
     
 Arguments:
 
@@ -13,4 +13,4 @@ Arguments:
     -s sentence  Hyphenate given sentence
     -f path      Hyphenate words from given file
     -l path      Load patterns from file to DB
-    -d path      Hyphenate words from database
+    -d           Hyphenate words from database

@@ -9,7 +9,7 @@ Usage:
 Arguments:
 
     -w word      Hyphenate given word
-    -p           Hyphenate given word and print patterns used in hyphenation
+    -p word      Hyphenate given word and print patterns used in hyphenation
     -s sentence  Hyphenate given sentence
     -f path      Hyphenate words from given file
     -l path      Load patterns from file to DB

@@ -17,10 +17,12 @@ class UserInteraction
     public function __construct()
     {
         $this->options = [
-            '-w',
-            '-s',
-            '-f',
-            '-l'
+            '-w' => 'string',
+            '-p' => 'string',
+            '-s' => 'string',
+            '-f' => 'string',
+            '-l' => 'string',
+            '-d' => 'boolean'
         ];
     }
 
@@ -31,18 +33,20 @@ class UserInteraction
     public function getUserInput(array $argv): InputParameters
     {
         // Remove script name.
-        $argv = array_slice($argv, 1);
+        array_shift($argv);
         // Initialize result array.
         $result = [];
         while ($argv) {
-            if (!in_array($argv[0], $this->options, true) || count($argv) < 2) {
+            $option = array_shift($argv);
+            if (!($optionKind = $this->options[$option])) {
                 $this->printHelp();
                 exit;
             }
-            // Set option value.
-            $result[$argv[0]] = $argv[1];
-            // Remove processed option.
-            $argv = array_slice($argv, 2);
+            if ($optionKind === 'string') {
+                $result[$option] = array_shift($argv);
+            } elseif ($option === 'boolean') {
+                $result[$option] = true;
+            }
         }
 
         return new InputParameters($result);
@@ -58,9 +62,11 @@ Usage:
 Arguments:
 
     -w word      Hyphenate given word
+    -p           Hyphenate given word and print patterns used in hyphenation
     -s sentence  Hyphenate given sentence
     -f path      Hyphenate words from given file
     -l path      Load patterns from file to DB
+    -d path      Hyphenate words from database
 EOF;
     }
 }

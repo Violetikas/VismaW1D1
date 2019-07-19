@@ -19,9 +19,9 @@ class SentenceHyphenator
     /**
      * SentenceHyphenator constructor.
      * @param LoggerInterface $logger
-     * @param \Fikusas\Hyphenation\WordHyphenator $hyphenator
+     * @param WordHyphenatorInterface $hyphenator
      */
-    public function __construct(LoggerInterface $logger, WordHyphenator $hyphenator)
+    public function __construct(LoggerInterface $logger, WordHyphenatorInterface $hyphenator)
     {
         $this->logger = $logger;
         $this->hyphenator = $hyphenator;

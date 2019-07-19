@@ -19,8 +19,13 @@ create table if not exists Words
         unique (word)
 );
 
-create table if not exists WordsAndPatternsID
+create table WordsAndPatternsID
 (
-    word_id int(11) null,
-    pattern_id int(11) null
+    word_id int not null,
+    pattern_id int not null,
+    constraint WordsAndPatternsID_Patterns_pattern_id_fk
+        foreign key (pattern_id) references Patterns (pattern_id),
+    constraint WordsAndPatternsID_Words_word_id_fk
+        foreign key (word_id) references Words (word_id)
 );
+

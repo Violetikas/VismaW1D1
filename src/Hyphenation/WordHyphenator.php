@@ -19,7 +19,7 @@ use Fikusas\DB\DatabaseConnector;
  * Class WordHyphenator
  * @package Fikusas\Hyphenation
  */
-class WordHyphenator
+class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
 {
 
     private $syllables;
@@ -107,16 +107,13 @@ class WordHyphenator
 
     /**
      * @param string $result
+     * @param string $word
      * @return string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     private function printResult(string $result, string $word): string
     {
-        $key = sha1($result);
         $foundInDB = $this->wordDB->isWordSavedToDB($word);
-        if ($this->cache->has($key)) {
-            return $this->cache->get($key, $result);
-        } else if ($foundInDB) {
+        if ($foundInDB) {
             return $this->wordDB->getHyphenatedWordFromDB($word);
         } else {
             for ($i = 0; $i < strlen($result); $i++) {
@@ -129,7 +126,6 @@ class WordHyphenator
                     $result = str_replace($result[$i], '', $result);
                 }
             }
-            $this->cache->set($key, $result);
             return $result;
         }
 

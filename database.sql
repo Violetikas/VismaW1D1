@@ -29,3 +29,4 @@ create table WordsAndPatternsID
         foreign key (word_id) references Words (word_id)
 );
 
+

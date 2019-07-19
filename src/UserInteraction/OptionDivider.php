@@ -61,7 +61,6 @@ class OptionDivider
             $this->wdb->writeWordToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
             return;
-
         }
 
         if ($value = $inputOption->getOption('-p')) {
@@ -73,9 +72,7 @@ class OptionDivider
                 $this->output->writeLine($row['pattern']);
             }
             return;
-
         }
-
 
         if ($value = $inputOption->getOption('-s')) {
             $this->output->writeLine($this->sentenceHyphenator->hyphenateSentence($value));
@@ -93,7 +90,6 @@ class OptionDivider
             }
             $this->wdb->writeWordsToDB($words, $hyphenatedWords);
             return;
-
         }
 
         if ($value = $inputOption->getOption('-l')) {
@@ -107,10 +103,6 @@ class OptionDivider
             //TODO hyphenate words from database
 
         } else throw new RuntimeException('Missing option');
-
-
-
-
     }
 
     public function getWord(InputParameters $inputOption)
@@ -120,9 +112,6 @@ class OptionDivider
 
             $this->output->writeLine($this->hyphenator->hyphenate($value));
             return;
-
         }
-
     }
-
 }

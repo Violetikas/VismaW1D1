@@ -1,6 +1,14 @@
 <?php
-//echo 'success';
+$request = $_SERVER['REQUEST_URI'];
 
-//var_dump($_SERVER['REQUEST_URI']);
-header('Content-Type: application/json');
-echo json_encode(['message'=>'success']);
+//switch ($request) {
+//    case '/' :
+//        require __DIR__ . '/index.php';
+//        break;
+//    case '' :
+//        require __DIR__ .  '/index.php';
+//        break;
+//    default:
+//        require __DIR__ . '/404.php';
+//        break;
+//}

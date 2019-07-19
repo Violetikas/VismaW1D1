@@ -4,5 +4,5 @@
   "db_name": "Visma1",
   "db_username": "root",
   "db_password":"violetatama",
-  "db_options": "PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION"
+  "db_options": "PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION",
 }

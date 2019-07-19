@@ -7,7 +7,6 @@ namespace Fikusas\DB;
 use Fikusas\Config\ConfigInterface;
 use Fikusas\Log\Logger;
 use PDO;
-use Psr\Log\LoggerInterface;
 
 
 class DatabaseConnector

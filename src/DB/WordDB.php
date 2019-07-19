@@ -3,10 +3,7 @@
 
 namespace Fikusas\DB;
 
-use Fikusas\Cache\FileCache;
 use PDOException;
-use Fikusas\Hyphenation\WordHyphenator;
-use Psr\SimpleCache\CacheInterface;
 use PDO;
 
 class WordDB
@@ -94,8 +91,6 @@ class WordDB
             throw $exception;
         }
     }
-
-
     public function selectPatternsUsed($word): array
     {
         $pdo = $this->dbConfig->getConnection();
@@ -107,6 +102,4 @@ class WordDB
 
         return $query->fetchAll();
     }
-
-
 }

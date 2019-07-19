@@ -24,9 +24,19 @@ use Fikusas\UserInteraction\Output;
 
 class Main
 {
+    /**
+     * @var TimeKeeping
+     */
     private $timeKeeping;
+    /**
+     * @var Logger
+     */
     private $logger;
+    /**
+     * @var UserInteraction
+     */
     private $input;
+
 
     public function __construct()
     {
@@ -35,12 +45,6 @@ class Main
         $this->logger = new Logger();
     }
 
-    /**
-     * Run the application.
-     *
-     * @param array $argv Input arguments
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     public function run(array $argv): void
     {
         $this->timeKeeping->startTime();
@@ -51,11 +55,11 @@ class Main
         $this->logger->info(sprintf('Completed in %.6f seconds', $this->timeKeeping->stopTime()));
     }
 
+
     private function createOptionDivider(Config\ConfigInterface $config): OptionDivider
     {
         $cache = new FileCache('cache', 86400);
         $loader = new PatternLoaderFile($config->getParameter('patterns_file'));
-        $wdb = new WordDB(new DatabaseConnector($config));
         $db = new DatabaseConnector($config);
         $wdb = new WordDB($db);
         $hyphenate = new CachingHyphenator(new DBHyphenator(new WordHyphenator($loader, $cache, $db), $wdb), $cache);

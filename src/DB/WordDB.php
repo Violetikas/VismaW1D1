@@ -77,7 +77,7 @@ class WordDB
         }
     }
 
-    public function storeWordSyllables(string $word, array $syllables): void
+    public function storeWordsPatternsIDs(string $word, array $syllables): void
     {
         $pdo = $this->dbConfig->getConnection();
         $stmt = $pdo->prepare('INSERT INTO WordsAndPatternsID (word_id, pattern_id)
@@ -98,7 +98,6 @@ class WordDB
 
     public function selectPatternsUsed($word): array
     {
-
         $pdo = $this->dbConfig->getConnection();
         $query = $pdo->prepare("select pattern from Words
         inner join WordsAndPatternsID on Words.word_id = WordsAndPatternsID.word_id

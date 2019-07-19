@@ -137,7 +137,7 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
      */
     private function storeSyllables(string $word, array $syllables)
     {
-        $this->wordDB->storeWordSyllables($word, $syllables);
+        $this->wordDB->storeWordsPatternsIDs($word, $syllables);
     }
 
     private function storeWord(string $word)

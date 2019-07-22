@@ -2,15 +2,11 @@
 
 
 namespace Fikusas\Config;
-
-
 use Fikusas\Config\Error\ParameterNotFoundError;
-
 class ArrayConfig implements ConfigInterface
 {
     /** @var array */
     private $values;
-
     /**
      * ArrayConfig constructor.
      * @param array $values
@@ -19,7 +15,6 @@ class ArrayConfig implements ConfigInterface
     {
         $this->values = $values;
     }
-
     public function getParameter(string $name)
     {
         if (!array_key_exists($name, $this->values)) {

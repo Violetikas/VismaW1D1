@@ -58,14 +58,16 @@ class OptionDivider
     {
         if ($value = $inputOption->getOption('-w')) {
             $hyphenatedWord = $this->hyphenator->hyphenate($value);
-            $this->wdb->writeWordToDB($value, $hyphenatedWord);
+            $this->wdb->writeWordToDB($value);
+            $this->wdb->writeHyphenatedWordToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
             return;
         }
 
         if ($value = $inputOption->getOption('-p')) {
             $hyphenatedWord = $this->hyphenator->hyphenate($value);
-            $this->wdb->writeWordToDB($value, $hyphenatedWord);
+            $this->wdb->writeWordToDB($value);
+            $this->wdb->writeHyphenatedWordToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
             $patterns = $this->wdb->selectPatternsUsed($value);
             foreach ($patterns as $row) {
@@ -88,7 +90,7 @@ class OptionDivider
                 $this->output->writeLine($hyphenatedWord);
                 array_push($hyphenatedWords, $hyphenatedWord);
             }
-            $this->wdb->writeWordsToDB($words, $hyphenatedWords);
+            $this->wdb->writeWordsToDB($words);
             return;
         }
 
@@ -98,11 +100,6 @@ class OptionDivider
             $this->db->writePatternsToDB($patterns);
         } else throw new RuntimeException('Missing option');
 
-
-        if ($value = $inputOption->getOption('-d')) {
-            //TODO hyphenate words from database
-
-        } else throw new RuntimeException('Missing option');
     }
 
     public function getWord(InputParameters $inputOption)

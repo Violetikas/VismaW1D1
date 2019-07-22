@@ -4,35 +4,26 @@
 namespace Fikusas\API;
 
 use Fikusas\DB\DatabaseConnector;
-use Fikusas\DB\WordDB;
-use Fikusas\Log\Logger;
+use PDO;
 
 
 class ApiRequest
 {
-
-    private $wdb;
-    /** @var DatabaseConnector
+    /**
+     * @var DatabaseConnector
      */
     private $db;
-
-
     /**
      * ApiRequest constructor.
-     * @param Logger $logger
-     * @param WordDB $wdb
+     * @param DatabaseConnector $db
      */
-    public function __construct(Logger $logger, WordDB $wdb, DatabaseConnector $db)
+    public function __construct( DatabaseConnector $db)
     {
-        $this->logger = $logger;
-        $this->wdb = $wdb;
         $this->db = $db;
     }
 
-
     public function getWordList(): void
     {
-
         $pdo = $this->db->getConnection();
         $words = array();
         $data = $pdo->prepare('select * from Words order by word_id');
@@ -46,6 +37,5 @@ class ApiRequest
         }
         return json_encode($words);
     }
-
 
 }

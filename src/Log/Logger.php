@@ -11,7 +11,7 @@ class Logger extends AbstractLogger
 {
     private $fileName;
 
-    public function __construct(string $fileName = 'errorLogger.Log')
+    public function __construct(string $fileName = __DIR__.'/../../errorLogger.Log')
     {
         $this->fileName = $fileName;
     }

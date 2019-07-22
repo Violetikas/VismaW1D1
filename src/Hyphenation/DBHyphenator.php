@@ -8,6 +8,7 @@ use Fikusas\DB\DatabaseConnector;
 use Fikusas\DB\WordDB;
 use Psr\SimpleCache\CacheInterface;
 
+
 /**
  * Class DBHyphenator
  * @package Fikusas\Hyphenation
@@ -18,10 +19,7 @@ class DBHyphenator implements WordHyphenatorInterface
      * @var WordHyphenator
      */
     private $hyphenator;
-    /**
-     * @var
-     */
-    private $cache;
+
     /**
      * @var WordDB
      */
@@ -46,10 +44,11 @@ class DBHyphenator implements WordHyphenatorInterface
      */
     public function hyphenate(string $word): string
     {
-
-        $hyphenatedWord = '';
-        if ($this->db->isWordSavedToDB($word)) {
-            $hyphenatedWord = $this->db->getHyphenatedWordFromDB($word);
+        $hyphenatedWord = $this->db->getHyphenatedWordFromDB($word);
+        if (!$hyphenatedWord) {
+            $this->db->writeWordToDB($word);
+            $hyphenatedWord = $this->hyphenator->hyphenate($word);
+            $this->db->writeHyphenatedWordToDB($word, $hyphenatedWord);
         }
         return $hyphenatedWord;
     }

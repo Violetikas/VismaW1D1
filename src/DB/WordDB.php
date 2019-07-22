@@ -3,8 +3,11 @@
 
 namespace Fikusas\DB;
 
+use Fikusas\Cache\FileCache;
 use PDOException;
 use PDO;
+use Fikusas\Hyphenation\WordHyphenator;
+use Psr\SimpleCache\CacheInterface;
 
 class WordDB
 {
@@ -26,27 +29,31 @@ class WordDB
         return $query->rowCount() == 1;
     }
 
-    public function getHyphenatedWordFromDB(string $word): string
+    public function getHyphenatedWordFromDB(string $word): ?string
     {
+
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("SELECT hyphenatedWord FROM Words WHERE word=:word;");
+
+        $query = $pdo->prepare('SELECT HyphenatedWords.hyphenatedWord
+        FROM HyphenatedWords INNER JOIN Words ON HyphenatedWords.word_id = Words.word_id WHERE word=:word;');
+
         if ($query->execute(array('word' => $word))) {
             return $query->fetch(PDO::FETCH_ASSOC)['hyphenatedWord'];
         }
 
     }
 
-    public function writeWordToDB(string $word, string $hyphenatedWord): void
+    public function writeWordToDB(string $word): void
     {
 
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare("REPLACE INTO Words(word, hyphenatedWord) VALUES (?,?)");
+        $stmt = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
         try {
             $pdo->beginTransaction();
             if (!$this->isWordSavedToDB($word)) {
-                $stmt->execute([$word, $hyphenatedWord]);
-                $pdo->commit();
+                $stmt->execute([$word]);
             }
+            $pdo->commit();
         } catch (PDOException $exception) {
             $pdo->rollback();
             throw $exception;
@@ -54,24 +61,44 @@ class WordDB
     }
 
 
-    public function writeWordsToDB(array $words, array $hyphenatedWords): void
+    public function writeWordsToDB(array $words): void
     {
 
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare("REPLACE INTO Words(word, hyphenatedWord) VALUES (?,?)");
+
+        $stmt = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
         try {
             $pdo->beginTransaction();
 
             for ($i = 0; $i < count($words); $i++) {
                 if (!$this->isWordSavedToDB($words[$i])) {
-                    $stmt->execute([$words[$i], $hyphenatedWords[$i]]);
-                    $pdo->commit();
+
+                    $stmt->execute([$words[$i]]);
                 }
             }
+            $pdo->commit();
         } catch (PDOException $exception) {
             $pdo->rollback();
             throw $exception;
         }
+    }
+
+    public function writeHyphenatedWordToDB($word, $hyphenatedWord)
+    {
+        $pdo = $this->dbConfig->getConnection();
+        $stmt = $pdo->prepare('REPLACE INTO HyphenatedWords (word_id, hyphenatedWord)
+        VALUES ((SELECT word_id FROM Words WHERE word = ?), ?)');
+        try {
+            $pdo->beginTransaction();
+            $stmt->execute([$word, $hyphenatedWord]);
+            $pdo->commit();
+
+        } catch (PDOException $exception) {
+            $pdo->rollback();
+            throw $exception;
+        }
+
+
     }
 
     public function storeWordsPatternsIDs(string $word, array $syllables): void
@@ -91,6 +118,7 @@ class WordDB
             throw $exception;
         }
     }
+
     public function selectPatternsUsed($word): array
     {
         $pdo = $this->dbConfig->getConnection();
@@ -101,5 +129,13 @@ class WordDB
         $query->execute([$word]);
 
         return $query->fetchAll();
+    }
+
+    public function deleteWord(string $word)
+    {
+        $pdo = $this->dbConfig->getConnection();
+        $query = $pdo->prepare("delete from Words
+        where word = ?");
+        $query->execute([$word]);
     }
 }

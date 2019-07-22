@@ -19,11 +19,10 @@ use Fikusas\DB\DatabaseConnector;
  * Class WordHyphenator
  * @package Fikusas\Hyphenation
  */
-class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
+class WordHyphenator implements WordHyphenatorInterface
 {
 
     private $syllables;
-    private $cache;
     private $wordDB;
     private $dbConfig;
 
@@ -31,13 +30,11 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
     /**
      * WordHyphenator constructor.
      * @param PatternLoaderInterface $loader
-     * @param CacheInterface $cache
      * @param DatabaseConnector $dbConfig
      */
-    public function __construct(PatternLoaderInterface $loader, CacheInterface $cache, DatabaseConnector $dbConfig)
+    public function __construct(PatternLoaderInterface $loader, DatabaseConnector $dbConfig)
     {
         $this->syllables = $loader->loadPatterns();
-        $this->cache = $cache;
         $this->dbConfig = $dbConfig;
         $this->wordDB = new WordDB($dbConfig);
     }
@@ -45,7 +42,6 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
     /**
      * @param string $word
      * @return string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function hyphenate(string $word): string
     {
@@ -80,11 +76,12 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
                 $final .= $numbersInWord[$i];
             }
         }
-        $this->storeWord($word);
+        $this->wordDB->writeHyphenatedWordToDB($word, $this->printResult($final));
         $this->storeSyllables($word, $syllables);
-        return $this->printResult($final, $word);
-    }
 
+
+        return $this->printResult($final);
+    }
 
     /**
      * @param string $syllable
@@ -110,26 +107,22 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
      * @param string $word
      * @return string
      */
-    private function printResult(string $result, string $word): string
+    private function printResult(string $result): string
     {
-        $foundInDB = $this->wordDB->isWordSavedToDB($word);
-        if ($foundInDB) {
-            return $this->wordDB->getHyphenatedWordFromDB($word);
-        } else {
-            for ($i = 0; $i < strlen($result); $i++) {
-                if (!is_numeric($result[$i])) {
-                    continue;
-                }
-                if (((int)$result[$i]) % 2 !== 0) {
-                    $result = str_replace($result[$i], '-', $result);
-                } else {
-                    $result = str_replace($result[$i], '', $result);
-                }
-            }
-            return $result;
-        }
 
+        for ($i = 0; $i < strlen($result); $i++) {
+            if (!is_numeric($result[$i])) {
+                continue;
+            }
+            if (((int)$result[$i]) % 2 !== 0) {
+                $result = str_replace($result[$i], '-', $result);
+            } else {
+                $result = str_replace($result[$i], '', $result);
+            }
+        }
+        return $result;
     }
+
 
     /**
      * @param string $word
@@ -140,9 +133,5 @@ class WordHyphenator implements \Fikusas\Hyphenation\WordHyphenatorInterface
         $this->wordDB->storeWordsPatternsIDs($word, $syllables);
     }
 
-    private function storeWord(string $word)
-    {
-        $this->wordDB->isWordSavedToDB($word);
-    }
 }
 

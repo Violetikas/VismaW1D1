@@ -53,7 +53,7 @@ class DatabaseConnector
 
     private function initDB(): void
     {
-        $queries = @file_get_contents('database.sql');
+        $queries = @file_get_contents(__DIR__.'/../../database.sql');
             if ($queries === false) {
                 $logger = new Logger();
                 $logger->critical("Cannot execute SQL query. Rollback changes.");

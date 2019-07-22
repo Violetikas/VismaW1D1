@@ -3,16 +3,8 @@
 
 namespace Fikusas\Hyphenation;
 
-
-use Fikusas\DB\DatabaseConnector;
 use Fikusas\DB\WordDB;
-use Psr\SimpleCache\CacheInterface;
 
-
-/**
- * Class DBHyphenator
- * @package Fikusas\Hyphenation
- */
 class DBHyphenator implements WordHyphenatorInterface
 {
     /**
@@ -25,7 +17,6 @@ class DBHyphenator implements WordHyphenatorInterface
      */
     private $db;
 
-
     /**
      * DBHyphenator constructor.
      * @param WordHyphenator $hyphenator
@@ -36,7 +27,6 @@ class DBHyphenator implements WordHyphenatorInterface
         $this->hyphenator = $hyphenator;
         $this->db = $db;
     }
-
 
     /**
      * @param string $word
@@ -49,6 +39,8 @@ class DBHyphenator implements WordHyphenatorInterface
             $this->db->writeWordToDB($word);
             $hyphenatedWord = $this->hyphenator->hyphenate($word);
             $this->db->writeHyphenatedWordToDB($word, $hyphenatedWord);
+            //TODO write wordsandpatternsid's also
+
         }
         return $hyphenatedWord;
     }

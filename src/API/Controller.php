@@ -2,19 +2,18 @@
 
 
 namespace Fikusas\API;
-
 use Fikusas\Config\JsonConfigLoader;
 use Fikusas\DB\DatabaseConnector;
+use Fikusas\DB\DatabaseConnectorInterface;
 use Fikusas\DB\WordDB;
 use Fikusas\Hyphenation\DBHyphenator;
 use Fikusas\Hyphenation\WordHyphenator;
 use Fikusas\Patterns\PatternLoaderDb;
-use Fikusas\Patterns\PatternLoaderFile;
-use PDO;
 
-class ApiMain
+class Controller
 {
-    /** @var DatabaseConnector */
+
+    /** @var DatabaseConnectorInterface */
     private $connector;
     private $config;
 
@@ -45,14 +44,13 @@ class ApiMain
         }
     }
 
-    private function respond(Response $response): void
+    public function respond(Response $response): void
     {
         http_response_code($response->getStatus());
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
         echo $response->getContentEncoded();
     }
-
 
     public function insertWord(): Response
     {
@@ -63,7 +61,6 @@ class ApiMain
         return new Response(['message' => "Word written to DB", "word" => $word], 201);
     }
 
-
     public function deleteWord(string $word): Response
     {
         $wordDb = new WordDB($this->connector);
@@ -71,7 +68,7 @@ class ApiMain
         return new Response(['message' => "Word deleted from to DB", "word" => $word], 200);
     }
 
-    private function updateWord(string $word): Response
+    public function updateWord(string $word): Response
     {
         $loader = new PatternLoaderDb($this->connector);
         $hyphenator = new DBHyphenator(new WordHyphenator($loader, $this->connector), new WordDB($this->connector));
@@ -79,32 +76,4 @@ class ApiMain
 
         return new Response(['message' => "Word updated", "word" => $word, "hyphenated" => $hyphenated], 200);
     }
-
-    public function handle()
-    {
-        // Remove fixed prefix from URL.
-        $uri = substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME'])));
-        $method = $_SERVER['REQUEST_METHOD'];
-        if ($uri == '/words') {
-            if ($method == 'GET') {
-                $response = $this->getWords();
-            } elseif ($method == 'POST') {
-                $response = $this->insertWord();
-            }
-        } elseif (preg_match('#^/words/(.+)#', $uri, $matches)) {
-            $word = $matches[1];
-            if ($method == 'DELETE') {
-                $response = $this->deleteWord($word);
-            } elseif ($method == 'POST') {
-                $response = $this->updateWord($word);
-            }
-        }
-
-        if (!isset($response)) {
-            $response = new Response(['error' => 'Unsupported request'], 400);
-        }
-
-        $this->respond($response);
-    }
-
 }

@@ -3,18 +3,15 @@
 
 namespace Fikusas\DB;
 
-use Fikusas\Cache\FileCache;
+
 use PDOException;
 use PDO;
-use Fikusas\Hyphenation\WordHyphenator;
-use Psr\SimpleCache\CacheInterface;
 
 class WordDB
 {
     private $dbConfig;
 
-
-    public function __construct(DatabaseConnector $dbConfig)
+    public function __construct(DatabaseConnectorInterface $dbConfig)
     {
         $this->dbConfig = $dbConfig;
     }
@@ -60,7 +57,6 @@ class WordDB
         }
     }
 
-
     public function writeWordsToDB(array $words): void
     {
 
@@ -85,6 +81,7 @@ class WordDB
 
     public function writeHyphenatedWordToDB($word, $hyphenatedWord)
     {
+
         $pdo = $this->dbConfig->getConnection();
         $stmt = $pdo->prepare('REPLACE INTO HyphenatedWords (word_id, hyphenatedWord)
         VALUES ((SELECT word_id FROM Words WHERE word = ?), ?)');
@@ -97,8 +94,6 @@ class WordDB
             $pdo->rollback();
             throw $exception;
         }
-
-
     }
 
     public function storeWordsPatternsIDs(string $word, array $syllables): void
@@ -134,8 +129,7 @@ class WordDB
     public function deleteWord(string $word)
     {
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("delete from Words
-        where word = ?");
+        $query = $pdo->prepare("DELETE FROM `Words` WHERE `word`=?");
         $query->execute([$word]);
     }
 }

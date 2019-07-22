@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
 
+use Fikusas\DB\DatabaseConnectorInterface;
 use Fikusas\DB\WordDB;
 use Fikusas\Patterns\PatternLoaderInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -26,13 +27,12 @@ class WordHyphenator implements WordHyphenatorInterface
     private $wordDB;
     private $dbConfig;
 
-
     /**
      * WordHyphenator constructor.
      * @param PatternLoaderInterface $loader
-     * @param DatabaseConnector $dbConfig
+     * @param DatabaseConnectorInterface $dbConfig
      */
-    public function __construct(PatternLoaderInterface $loader, DatabaseConnector $dbConfig)
+    public function __construct(PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig)
     {
         $this->syllables = $loader->loadPatterns();
         $this->dbConfig = $dbConfig;
@@ -122,7 +122,6 @@ class WordHyphenator implements WordHyphenatorInterface
         }
         return $result;
     }
-
 
     /**
      * @param string $word

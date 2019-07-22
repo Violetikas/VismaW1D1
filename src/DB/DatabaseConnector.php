@@ -9,7 +9,7 @@ use Fikusas\Log\Logger;
 use PDO;
 
 
-class DatabaseConnector
+class DatabaseConnector implements DatabaseConnectorInterface
 {
     /** @var PDO */
     private $pdo;

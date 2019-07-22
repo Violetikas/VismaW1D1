@@ -20,9 +20,8 @@ create table if not exists Words
 
 create table if not exists HyphenatedWords
 (
-    word_id        int          not null,
+    word_id        int          not null primary key ,
     hyphenatedWord varchar(255) not null,
-    primary key (word_id),
     constraint HyphenatedWords_Words_word_id_fk
         foreign key (word_id) references Words (word_id) on delete cascade
 );

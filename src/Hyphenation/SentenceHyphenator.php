@@ -8,7 +8,7 @@
 
 namespace Fikusas\Hyphenation;
 
-use Fikusas\Hyphenation\WordHyphenator;
+
 use Psr\Log\LoggerInterface;
 
 class SentenceHyphenator
@@ -28,10 +28,7 @@ class SentenceHyphenator
 
     }
 
-    /**
-     * @param string $sentence
-     * @return string
-     */
+
     public function hyphenateSentence(string $sentence): string
     {
         $result = '';

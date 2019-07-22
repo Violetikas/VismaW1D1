@@ -48,7 +48,6 @@ class OptionDivider
         $this->wdb = $wdb;
     }
 
-
     /**
      * @param InputParameters $inputOption
      * @return void

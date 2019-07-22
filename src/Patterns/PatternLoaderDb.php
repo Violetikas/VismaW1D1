@@ -5,17 +5,18 @@ namespace Fikusas\Patterns;
 
 
 use Fikusas\DB\DatabaseConnector;
+use Fikusas\DB\DatabaseConnectorInterface;
 
 class PatternLoaderDb implements PatternLoaderInterface
 {
-    /** @var DatabaseConnector */
+    /** @var DatabaseConnectorInterface */
     private $dbConfig;
 
     /**
      * PatternLoaderDb constructor.
-     * @param DatabaseConnector $dbConfig
+     * @param DatabaseConnectorInterface $dbConfig
      */
-    public function __construct(DatabaseConnector $dbConfig)
+    public function __construct(DatabaseConnectorInterface $dbConfig)
     {
         $this->dbConfig = $dbConfig;
     }

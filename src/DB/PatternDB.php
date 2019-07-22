@@ -12,9 +12,9 @@ class PatternDB
 
     /**
      * PatternDB constructor.
-     * @param DatabaseConnector $dbConfig
+     * @param DatabaseConnectorInterface $dbConfig
      */
-    public function __construct(DatabaseConnector $dbConfig)
+    public function __construct(DatabaseConnectorInterface $dbConfig)
     {
         $this->dbConfig = $dbConfig;
     }

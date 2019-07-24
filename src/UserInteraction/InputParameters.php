@@ -13,10 +13,6 @@ class InputParameters
 {
     private $options;
 
-    /**
-     * InputParameters constructor.
-     * @param array $options
-     */
     public function __construct(array $options)
     {
         $this->options = $options;
@@ -30,5 +26,4 @@ class InputParameters
     {
         return $this->options[$name]??null;
     }
-
 }

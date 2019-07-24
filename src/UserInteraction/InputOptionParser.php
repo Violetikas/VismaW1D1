@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Fikusas\UserInteraction;
 
 
-class UserInteraction
+class InputOptionParser
 {
     private $options;
 
@@ -30,7 +30,7 @@ class UserInteraction
      * @param array $argv
      * @return InputParameters
      */
-    public function getUserInput(array $argv): InputParameters
+    public function parse(array $argv): InputParameters
     {
         // Remove script name.
         array_shift($argv);

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Fikusas\UserInteraction;
 
+use Fikusas\DB\HyphenatedWordsDB;
 use Fikusas\DB\PatternDB;
 use Fikusas\DB\WordDB;
 use Fikusas\FileRead\FileReadFromInput;
@@ -28,17 +29,11 @@ class OptionDivider
     private $output;
     private $db;
     private $wdb;
+    private $hdb;
+    private $inputOption;
 
-    /**
-     * OptionDivider constructor.
-     * @param WordHyphenatorInterface $hyphenator
-     * @param SentenceHyphenator $sentenceHyphenator
-     * @param FileReadFromInput $fileReadFromInput
-     * @param Output $output
-     * @param PatternDB $db
-     * @param WordDB $wdb
-     */
-    public function __construct(WordHyphenatorInterface $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output, PatternDB $db, WordDB $wdb)
+
+    public function __construct(WordHyphenatorInterface $hyphenator, SentenceHyphenator $sentenceHyphenator, FileReadFromInput $fileReadFromInput, Output $output, PatternDB $db, WordDB $wdb, HyphenatedWordsDB $hdb,  InputParameters $inputOption)
     {
         $this->hyphenator = $hyphenator;
         $this->sentenceHyphenator = $sentenceHyphenator;
@@ -46,29 +41,31 @@ class OptionDivider
         $this->output = $output;
         $this->db = $db;
         $this->wdb = $wdb;
+        $this->hdb = $hdb;
+        $this->inputOption = $inputOption;
     }
 
+
     /**
-     * @param InputParameters $inputOption
-     * @return void
+     * @param $inputOption
      * @throws InvalidArgumentException
      */
     public function divideOptions(InputParameters $inputOption): void
     {
         if ($value = $inputOption->getOption('-w')) {
             $hyphenatedWord = $this->hyphenator->hyphenate($value);
-            $this->wdb->writeWordToDB($value);
-            $this->wdb->writeHyphenatedWordToDB($value, $hyphenatedWord);
+            $this->wdb->writeToDB($value);
+            $this->hdb->writeToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
             return;
         }
 
         if ($value = $inputOption->getOption('-p')) {
             $hyphenatedWord = $this->hyphenator->hyphenate($value);
-            $this->wdb->writeWordToDB($value);
-            $this->wdb->writeHyphenatedWordToDB($value, $hyphenatedWord);
+            $this->wdb->writeToDB($value);
+            $this->hdb->writeToDB($value, $hyphenatedWord);
             $this->output->writeLine($this->hyphenator->hyphenate($value));
-            $patterns = $this->wdb->selectPatternsUsed($value);
+            $patterns = $this->db->getFromDB($value);
             foreach ($patterns as $row) {
                 $this->output->writeLine($row['pattern']);
             }
@@ -96,7 +93,7 @@ class OptionDivider
         if ($value = $inputOption->getOption('-l')) {
             $loader = new PatternLoaderFile($value);
             $patterns = $loader->loadPatterns();
-            $this->db->writePatternsToDB($patterns);
+            $this->db->writeToDB($patterns);
         } else throw new RuntimeException('Missing option');
 
     }

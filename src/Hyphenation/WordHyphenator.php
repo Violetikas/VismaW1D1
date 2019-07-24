@@ -1,74 +1,44 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: violetatamasauskiene
- * Date: 2019-07-04
- * Time: 14:18
- */
 
 declare(strict_types=1);
 
 namespace Fikusas\Hyphenation;
 
 use Fikusas\DB\DatabaseConnectorInterface;
+use Fikusas\DB\HyphenatedWordsDB;
+use Fikusas\DB\PatternDB;
 use Fikusas\DB\WordDB;
 use Fikusas\Patterns\PatternLoaderInterface;
-use Psr\SimpleCache\CacheInterface;
-use Fikusas\DB\DatabaseConnector;
 
-/**
- * Class WordHyphenator
- * @package Fikusas\Hyphenation
- */
 class WordHyphenator implements WordHyphenatorInterface
 {
 
-    private $syllables;
+    private $patterns;
     private $wordDB;
     private $dbConfig;
+    private $patternDB;
+    private $hdb;
 
     /**
      * WordHyphenator constructor.
      * @param PatternLoaderInterface $loader
      * @param DatabaseConnectorInterface $dbConfig
+     * @param WordDB $wordDB
+     * @param PatternDB $patternDB
+     * @param HyphenatedWordsDB $hdb
      */
-    public function __construct(PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig)
+    public function __construct(PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hdb)
     {
-        $this->syllables = $loader->loadPatterns();
+        $this->patterns = $loader->loadPatterns();
         $this->dbConfig = $dbConfig;
-        $this->wordDB = new WordDB($dbConfig);
+        $this->wordDB = $wordDB;
+        $this->patternDB = $patternDB;
+        $this->hdb = $hdb;
     }
 
-    /**
-     * @param string $word
-     * @return string
-     */
     public function hyphenate(string $word): string
     {
-        $numbersInWord = [];
-        $syllables = [];
-
-        foreach ($this->syllables as $syllable) {
-            $toFind = preg_replace('/[\d.]/', '', $syllable);
-            $position = strpos($word, $toFind);
-            if (false === $position) {
-                continue;
-            }
-            if ($syllable[0] == '.' && $position !== 0) {
-                continue;
-            }
-            if (($syllable[strlen($syllable) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
-                continue;
-            }
-            $syllables[] = $syllable;
-            $numbers = $this->extractNumbers($syllable);
-            foreach ($numbers as $position1 => $number) {
-                $position1 = $position1 + $position;
-                if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {
-                    $numbersInWord[$position1] = $number;
-                }
-            }
-        }
+        $numbersInWord = $this->findNumbersInWord($word);
         $final = '';
         foreach (str_split($word) as $i => $l) {
             $final .= $l;
@@ -76,22 +46,67 @@ class WordHyphenator implements WordHyphenatorInterface
                 $final .= $numbersInWord[$i];
             }
         }
-        $this->wordDB->writeHyphenatedWordToDB($word, $this->printResult($final));
-        $this->storeSyllables($word, $syllables);
-
+        $this->hdb->writeToDB($word, $this->printResult($final));
 
         return $this->printResult($final);
     }
 
-    /**
-     * @param string $syllable
-     * @return array
-     */
-    private function extractNumbers(string $syllable): array
+    private function findNumbersInWord(string $word): array
+    {
+
+        $numbersInWord = [];
+        $patterns = [];
+        foreach ($this->patterns as $pattern) {
+            $toFind = preg_replace('/[\d.]/', '', $pattern);
+            $position = strpos($word, $toFind);
+            if (false === $position) {
+                continue;
+            }
+            if ($pattern[0] == '.' && $position !== 0) {
+                continue;
+            }
+            if (($pattern[strlen($pattern) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
+                continue;
+            }
+            $patterns[] = $pattern;
+            $numbers = $this->extractNumbers($pattern);
+            foreach ($numbers as $position1 => $number) {
+                $position1 = $position1 + $position;
+                if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {
+                    $numbersInWord[$position1] = $number;
+                }
+            }
+        }
+//      $this->storePatterns($word, $patterns);
+        return $numbersInWord;
+    }
+
+    public function findPatterns(string $word): array
+    {
+        $patterns = [];
+        foreach ($this->patterns as $pattern) {
+            $toFind = preg_replace('/[\d.]/', '', $pattern);
+            $position = strpos($word, $toFind);
+            if (false === $position) {
+                continue;
+            }
+            if ($pattern[0] == '.' && $position !== 0) {
+                continue;
+            }
+            if (($pattern[strlen($pattern) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
+                continue;
+            }
+            $patterns[] = $pattern;
+        }
+        return $patterns;
+    }
+
+
+    private function extractNumbers(string $pattern): array
     {
         $result = [];
-        if (preg_match_all('/\d+/', $syllable, $matches, PREG_OFFSET_CAPTURE) > 0) {
-            $offset = preg_match('/[^\d.]/', $syllable);
+        if (preg_match_all('/\d+/', $pattern, $matches, PREG_OFFSET_CAPTURE) > 0) {
+            $offset = preg_match('/[^\d.]/', $pattern);
             foreach ($matches[0] as $match) {
                 [$number, $position] = $match;
                 $position = $position - $offset;
@@ -102,14 +117,8 @@ class WordHyphenator implements WordHyphenatorInterface
         return $result;
     }
 
-    /**
-     * @param string $result
-     * @param string $word
-     * @return string
-     */
     private function printResult(string $result): string
     {
-
         for ($i = 0; $i < strlen($result); $i++) {
             if (!is_numeric($result[$i])) {
                 continue;
@@ -123,14 +132,10 @@ class WordHyphenator implements WordHyphenatorInterface
         return $result;
     }
 
-    /**
-     * @param string $word
-     * @param array $syllables
-     */
-    private function storeSyllables(string $word, array $syllables)
-    {
-        $this->wordDB->storeWordsPatternsIDs($word, $syllables);
-    }
 
+    private function storePatterns(string $word, array $patterns)
+    {
+        $this->wordDB->writeWordsPatternsIDs($word, $patterns);
+    }
 }
 

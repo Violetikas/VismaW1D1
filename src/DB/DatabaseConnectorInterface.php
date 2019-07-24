@@ -13,9 +13,5 @@ interface DatabaseConnectorInterface
      */
     public function __construct(ConfigInterface $config);
 
-    /**
-     * @return PDO
-     * @throws \Fikusas\Config\Error\ParameterNotFoundError
-     */
     public function getConnection(): PDO;
 }

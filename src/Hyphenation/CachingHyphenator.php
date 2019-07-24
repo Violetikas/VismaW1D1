@@ -3,42 +3,45 @@
 
 namespace Fikusas\Hyphenation;
 
-
-use Fikusas\DB\DatabaseConnector;
+use Fikusas\DB\HyphenatedWordsDB;
+use Fikusas\DB\PatternDB;
 use Psr\SimpleCache\CacheInterface;
 use Fikusas\DB\WordDB;
-use PDO;
+
 class CachingHyphenator implements WordHyphenatorInterface
 {
     private $hyphenator;
     private $cache;
-    private $db;
+    private $wdb;
+    private $hdb;
+    private $pdb;
+    private $patterns;
 
-    public function __construct(DBHyphenator $hyphenator, CacheInterface $cache, WordDB $db)
+
+    public function __construct(WordHyphenatorInterface $hyphenator, CacheInterface $cache, WordDB $db, HyphenatedWordsDB $hdb, PatternDB $pdb, WordHyphenator $patterns)
     {
         $this->hyphenator = $hyphenator;
         $this->cache = $cache;
-        $this->db = $db;
+        $this->wdb = $db;
+        $this->hdb = $hdb;
+        $this->pdb = $pdb;
+        $this->patterns = $patterns;
     }
 
-    /**
-     * @param string $word
-     * @return string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     public function hyphenate(string $word): string
     {
-
         $key = sha1($word);
         if (!($hyphenatedWord = $this->cache->get($key))) {
             $hyphenatedWord = $this->hyphenator->hyphenate($word);
             $this->cache->set($key, $hyphenatedWord);
-            $this->db->writeWordToDB($word);
-            $this->db->writeHyphenatedWordToDB($word, $hyphenatedWord);
-            //TODO write wordsandpatternsid's also
+            $patterns = $this->patterns->findPatterns($word);
+            $this->wdb->writeToDB($word);
+            $this->hdb->writeToDB($word, $hyphenatedWord);
+            $this->wdb->writeWordsPatternsIDs($word,$patterns);
+
         }
-        $this->db->writeWordToDB($word);
-        $this->db->writeHyphenatedWordToDB($word, $hyphenatedWord);
+        $this->wdb->writeToDB($word);
+        $this->hdb->writeToDB($word, $hyphenatedWord);
 
         return $hyphenatedWord;
     }

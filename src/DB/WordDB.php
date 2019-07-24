@@ -16,7 +16,7 @@ class WordDB
         $this->dbConfig = $dbConfig;
     }
 
-    public function isWordSavedToDB(string $word): bool
+    public function isSavedToDB(string $word): bool
     {
         $pdo = $this->dbConfig->getConnection();
         $query = $pdo->prepare("SELECT `word_id` FROM `Words` WHERE `word` =:word;");
@@ -26,28 +26,14 @@ class WordDB
         return $query->rowCount() == 1;
     }
 
-    public function getHyphenatedWordFromDB(string $word): ?string
-    {
-
-        $pdo = $this->dbConfig->getConnection();
-
-        $query = $pdo->prepare('SELECT HyphenatedWords.hyphenatedWord
-        FROM HyphenatedWords INNER JOIN Words ON HyphenatedWords.word_id = Words.word_id WHERE word=:word;');
-
-        if ($query->execute(array('word' => $word))) {
-            return $query->fetch(PDO::FETCH_ASSOC)['hyphenatedWord'];
-        }
-
-    }
-
-    public function writeWordToDB(string $word): void
+    public function writeToDB(string $word): void
     {
 
         $pdo = $this->dbConfig->getConnection();
         $stmt = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
         try {
             $pdo->beginTransaction();
-            if (!$this->isWordSavedToDB($word)) {
+            if (!$this->isSavedToDB($word)) {
                 $stmt->execute([$word]);
             }
             $pdo->commit();
@@ -67,7 +53,7 @@ class WordDB
             $pdo->beginTransaction();
 
             for ($i = 0; $i < count($words); $i++) {
-                if (!$this->isWordSavedToDB($words[$i])) {
+                if (!$this->isSavedToDB($words[$i])) {
 
                     $stmt->execute([$words[$i]]);
                 }
@@ -79,32 +65,23 @@ class WordDB
         }
     }
 
-    public function writeHyphenatedWordToDB($word, $hyphenatedWord)
+    public function deleteFromDB(string $word)
     {
-
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare('REPLACE INTO HyphenatedWords (word_id, hyphenatedWord)
-        VALUES ((SELECT word_id FROM Words WHERE word = ?), ?)');
-        try {
-            $pdo->beginTransaction();
-            $stmt->execute([$word, $hyphenatedWord]);
-            $pdo->commit();
-
-        } catch (PDOException $exception) {
-            $pdo->rollback();
-            throw $exception;
-        }
+        $query = $pdo->prepare("DELETE FROM `Words` WHERE `word`=?");
+        $query->execute([$word]);
     }
 
-    public function storeWordsPatternsIDs(string $word, array $syllables): void
+    public function writeWordsPatternsIDs(string $word, array $patterns): void
     {
         $pdo = $this->dbConfig->getConnection();
         $stmt = $pdo->prepare('INSERT INTO WordsAndPatternsID (word_id, pattern_id)
-        VALUES ((SELECT word_id FROM Words WHERE word = ?), (SELECT pattern_id FROM Patterns WHERE pattern = ?))');
+        VALUES ((SELECT word_id FROM Words WHERE word = ?), (SELECT pattern_id FROM Patterns WHERE pattern = ?))');//iskelt atskirus kintamuosius
 
         try {
             $pdo->beginTransaction();
-            foreach ($syllables as $pattern) {
+            foreach ($patterns as $pattern) {
+
                 $stmt->execute([$word, $pattern]);
             }
             $pdo->commit();
@@ -114,22 +91,4 @@ class WordDB
         }
     }
 
-    public function selectPatternsUsed($word): array
-    {
-        $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("select pattern from Words
-        inner join WordsAndPatternsID on Words.word_id = WordsAndPatternsID.word_id
-        inner join Patterns on WordsAndPatternsID.pattern_id = Patterns.pattern_id
-        where word = ?");
-        $query->execute([$word]);
-
-        return $query->fetchAll();
-    }
-
-    public function deleteWord(string $word)
-    {
-        $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("DELETE FROM `Words` WHERE `word`=?");
-        $query->execute([$word]);
-    }
 }

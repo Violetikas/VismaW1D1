@@ -19,7 +19,6 @@ class Response
         $this->status = $status;
         $this->content = $content;
     }
-
     /**
      * @return int
      */

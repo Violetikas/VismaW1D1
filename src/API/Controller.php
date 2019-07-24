@@ -2,30 +2,41 @@
 
 
 namespace Fikusas\API;
-use Fikusas\Config\JsonConfigLoader;
-use Fikusas\DB\DatabaseConnector;
+
 use Fikusas\DB\DatabaseConnectorInterface;
+use Fikusas\DB\HyphenatedWordsDB;
+use Fikusas\DB\PatternDB;
 use Fikusas\DB\WordDB;
-use Fikusas\Hyphenation\DBHyphenator;
-use Fikusas\Hyphenation\WordHyphenator;
-use Fikusas\Patterns\PatternLoaderDb;
+use Fikusas\Hyphenation\WordHyphenatorInterface;
+use Fikusas\Patterns\PatternLoaderInterface;
 
 class Controller
 {
 
     /** @var DatabaseConnectorInterface */
-    private $connector;
-    private $config;
+    private $dbConfig;
+    private $patterns;
+    private $patternDB;
+    private $hdb;
+    private $wordDB;
+    private $hyphenator;
+    private $response;
 
-    public function __construct()
+
+    public function __construct(Response $response, WordHyphenatorInterface $hyphenator, PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hdb)
     {
-        $this->config = JsonConfigLoader::load(__DIR__ . '/../../config.json');
-        $this->connector = new DatabaseConnector($this->config);
+        $this->patterns = $loader->loadPatterns();
+        $this->dbConfig = $dbConfig;
+        $this->wordDB = $wordDB;
+        $this->patternDB = $patternDB;
+        $this->hdb = $hdb;
+        $this->hyphenator = $hyphenator;
+        $this->response = $response;
     }
 
     public function getWords(): Response
     {
-        $pdo = $this->connector->getConnection();
+        $pdo = $this->dbConfig->getConnection();
         $words = array();
         $data = $pdo->prepare('select * from Words inner join HyphenatedWords HW on Words.word_id = HW.word_id order by Words.word_id');
         $data->execute();
@@ -46,34 +57,32 @@ class Controller
 
     public function respond(Response $response): void
     {
-        http_response_code($response->getStatus());
+        http_response_code($this->response->getStatus());
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
-        echo $response->getContentEncoded();
+        echo $this->response->getContentEncoded();
     }
 
     public function insertWord(): Response
     {
-        $wordDb = new WordDB($this->connector);
         $input = json_decode(file_get_contents('php://input'));
         $word = $input->word;
-        $wordDb->writeWordToDB($word);
+        $this->wordDB->writeToDB($word);
         return new Response(['message' => "Word written to DB", "word" => $word], 201);
     }
 
     public function deleteWord(string $word): Response
     {
-        $wordDb = new WordDB($this->connector);
-        $wordDb->deleteWord($word);
+        $this->wordDB->deleteFromDB($word);
         return new Response(['message' => "Word deleted from to DB", "word" => $word], 200);
     }
 
     public function updateWord(string $word): Response
     {
-        $loader = new PatternLoaderDb($this->connector);
-        $hyphenator = new DBHyphenator(new WordHyphenator($loader, $this->connector), new WordDB($this->connector));
-        $hyphenated = $hyphenator->hyphenate($word);
+        $hyphenated = $this->hyphenator->hyphenate($word);
 
         return new Response(['message' => "Word updated", "word" => $word, "hyphenated" => $hyphenated], 200);
     }
 }
+
+

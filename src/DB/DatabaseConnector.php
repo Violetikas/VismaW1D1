@@ -33,7 +33,6 @@ class DatabaseConnector implements DatabaseConnectorInterface
      */
     public function getConnection(): PDO
     {
-
         if (!$this->pdo) {
             $this->pdo = new PDO(
                 sprintf(

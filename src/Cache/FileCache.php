@@ -107,15 +107,12 @@ class FileCache implements CacheInterface
         $this->dirMode = $dirMode;
         $this->fileMode = $fileMode;
         if (!file_exists($cachePath) && file_exists(dirname($cachePath))) {
-            $this->mkdir($cachePath);
+            $this->makeDirectory($cachePath);
         }
         $path = realpath($cachePath);
         if ($path === false) {
             throw new InvalidArgumentException("Cache path does not exist: {$cachePath}");
         }
-//        if (!is_writable($path . DIRECTORY_SEPARATOR)) {
-//            throw new InvalidArgumentException("Cache path is not writable: {$cachePath}");
-//        }
         $this->cachePath = $path;
     }
 
@@ -161,7 +158,7 @@ class FileCache implements CacheInterface
         } else {
             if (!file_exists($dir)) {
                 // ensure that the parent path exists:
-                $this->mkdir($dir);
+                $this->makeDirectory($dir);
             }
             $temp_path = $this->cachePath . DIRECTORY_SEPARATOR . uniqid('', true);
             if (is_int($ttl)) {
@@ -262,7 +259,7 @@ class FileCache implements CacheInterface
         $path = $this->getPath($key);
         $dir = dirname($path);
         if (!file_exists($dir)) {
-            $this->mkdir($dir);
+            $this->makeDirectory($dir);
         }
         $lockPath = $dir . DIRECTORY_SEPARATOR . ".lock";
         $lockHandle = fopen($lockPath, "w");
@@ -331,11 +328,11 @@ class FileCache implements CacheInterface
         return preg_match('/^[0-9A-Za-z_.]+$/', $key) == 1;
     }
 
-    private function mkdir($path)
+    private function makeDirectory($path)
     {
         $parentPath = dirname($path);
         if (!file_exists($parentPath)) {
-            $this->mkdir($parentPath);
+            $this->makeDirectory($parentPath);
         }
         mkdir($path);
         chmod($path, $this->dirMode);

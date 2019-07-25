@@ -24,6 +24,6 @@ class InputParameters
      */
     public function getOption(string $name)
     {
-        return $this->options[$name]??null;
+       return $this->options[$name]??null;
     }
 }

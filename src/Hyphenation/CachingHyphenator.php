@@ -12,36 +12,38 @@ class CachingHyphenator implements WordHyphenatorInterface
 {
     private $hyphenator;
     private $cache;
-    private $wdb;
-    private $hdb;
-    private $pdb;
+    private $wordDB;
+    private $hyphenatedWordsDB;
+    private $patternDB;
     private $patterns;
 
-
-    public function __construct(WordHyphenatorInterface $hyphenator, CacheInterface $cache, WordDB $db, HyphenatedWordsDB $hdb, PatternDB $pdb, WordHyphenator $patterns)
+    public function __construct(WordHyphenatorInterface $hyphenator, CacheInterface $cache, WordDB $wordDB, HyphenatedWordsDB $hyphenatedWordsDB, PatternDB $patternDB, WordHyphenator $patterns)
     {
         $this->hyphenator = $hyphenator;
         $this->cache = $cache;
-        $this->wdb = $db;
-        $this->hdb = $hdb;
-        $this->pdb = $pdb;
+        $this->wordDB = $wordDB;
+        $this->hyphenatedWordsDB = $hyphenatedWordsDB;
+        $this->patternDB = $patternDB;
         $this->patterns = $patterns;
     }
 
     public function hyphenate(string $word): string
     {
+        var_dump('cache');
         $key = sha1($word);
         if (!($hyphenatedWord = $this->cache->get($key))) {
             $hyphenatedWord = $this->hyphenator->hyphenate($word);
             $this->cache->set($key, $hyphenatedWord);
             $patterns = $this->patterns->findPatterns($word);
-            $this->wdb->writeToDB($word);
-            $this->hdb->writeToDB($word, $hyphenatedWord);
-            $this->wdb->writeWordsPatternsIDs($word,$patterns);
+            $this->wordDB->writeToDB($word);
+            $this->hyphenatedWordsDB->writeToDB($word, $hyphenatedWord);
+            $this->wordDB->writeWordsPatternsIDs($word,$patterns);
 
         }
-        $this->wdb->writeToDB($word);
-        $this->hdb->writeToDB($word, $hyphenatedWord);
+        $this->wordDB->writeToDB($word);
+        $this->hyphenatedWordsDB->writeToDB($word, $hyphenatedWord);
+        $patterns = $this->patterns->findPatterns($word);
+        $this->wordDB->writeWordsPatternsIDs($word,$patterns);
 
         return $hyphenatedWord;
     }

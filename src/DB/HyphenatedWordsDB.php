@@ -21,11 +21,11 @@ class HyphenatedWordsDB
 
         $pdo = $this->dbConfig->getConnection();
 
-        $query = $pdo->prepare('SELECT HyphenatedWords.hyphenatedWord
+        $selector = $pdo->prepare('SELECT HyphenatedWords.hyphenatedWord
         FROM HyphenatedWords INNER JOIN Words ON HyphenatedWords.word_id = Words.word_id WHERE word=:word;');
 
-        if ($query->execute(array('word' => $word))) {
-            return $query->fetch(PDO::FETCH_ASSOC)['hyphenatedWord'];
+        if ($selector->execute(array('word' => $word))) {
+            return $selector->fetch(PDO::FETCH_ASSOC)['hyphenatedWord'];
         }
 
     }
@@ -34,11 +34,11 @@ class HyphenatedWordsDB
     {
 
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare('REPLACE INTO HyphenatedWords (word_id, hyphenatedWord)
+        $writer = $pdo->prepare('REPLACE INTO HyphenatedWords (word_id, hyphenatedWord)
         VALUES ((SELECT word_id FROM Words WHERE word = ?), ?)');
         try {
             $pdo->beginTransaction();
-            $query->execute([$word, $hyphenatedWord]);
+            $writer->execute([$word, $hyphenatedWord]);
             $pdo->commit();
 
         } catch (PDOException $exception) {

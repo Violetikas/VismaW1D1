@@ -11,12 +11,11 @@ use Fikusas\Config\JsonConfigLoader;
 use Fikusas\DB\DatabaseConnector;
 use Fikusas\DB\DatabaseConnectorInterface;
 use Fikusas\Hyphenation\CachingHyphenator;
-use Fikusas\Hyphenation\WordHyphenator;
+use Fikusas\Hyphenation\DBHyphenator;
 use Fikusas\Hyphenation\WordHyphenatorInterface;
 use Fikusas\Log\Logger;
 use Fikusas\Patterns\PatternLoaderDb;
 use Fikusas\Patterns\PatternLoaderInterface;
-use Fikusas\UserInteraction\InputParameters;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -37,10 +36,7 @@ class ContainerBuilder
             return new FileCache(__DIR__.'/../../cache', 86400);
         });
         $container->setAlias(LoggerInterface::class, Logger::class);
-        $container->setArgument(CachingHyphenator::class, 'hyphenator', WordHyphenator::class);
+        $container->setArgument(CachingHyphenator::class, 'hyphenator', DBHyphenator::class);
         return $container;
-//        $container->setDefinition(InputParameters::class, function () {
-//            return InputParameters::getOption();
-//        });
     }
 }

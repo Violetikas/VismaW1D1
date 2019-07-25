@@ -10,31 +10,32 @@ use Fikusas\DB\WordDB;
 class DBHyphenator implements WordHyphenatorInterface
 {
     private $hyphenator;
-    private $wdb;
-    private $hdb;
+    private $wordsDB;
+    private $hyphenatedWordsDB;
     private $patterns;
-    private $pdb;
+    private $patternDB;
 
 
 
-    public function __construct(WordHyphenator $hyphenator, HyphenatedWordsDB $hdb, WordDB $wordsDB, PatternDB $pdb, WordHyphenator $patterns)
+    public function __construct(WordHyphenator $hyphenator, HyphenatedWordsDB $hyphenatedWordsDB, WordDB $wordsDB, PatternDB $patternDB, WordHyphenator $patterns)
     {
         $this->hyphenator = $hyphenator;
-        $this->wdb = $wordsDB;
-        $this->hdb = $hdb;
-        $this->pdb = $pdb;
+        $this->wordsDB = $wordsDB;
+        $this->hyphenatedWordsDB = $hyphenatedWordsDB;
+        $this->patternDB = $patternDB;
         $this->patterns = $patterns;
     }
 
     public function hyphenate(string $word): string
     {
-        $hyphenatedWord = $this->hdb->getFromDB($word);
+        var_dump('db');
+        $hyphenatedWord = $this->hyphenatedWordsDB->getFromDB($word);
         if (!$hyphenatedWord) {
-            $this->wdb->writeToDB($word);
+            $this->wordsDB->writeToDB($word);
             $patterns = $this->patterns->findPatterns($word);
             $hyphenatedWord = $this->hyphenator->hyphenate($word);
-            $this->hdb->writeToDB($word, $hyphenatedWord);
-            $this->wdb->writeWordsPatternsIDs($word,$patterns);
+            $this->hyphenatedWordsDB->writeToDB($word, $hyphenatedWord);
+            $this->wordsDB->writeWordsPatternsIDs($word,$patterns);
 
 
         }

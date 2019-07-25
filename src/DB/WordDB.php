@@ -5,7 +5,6 @@ namespace Fikusas\DB;
 
 
 use PDOException;
-use PDO;
 
 class WordDB
 {
@@ -19,27 +18,20 @@ class WordDB
     public function isSavedToDB(string $word): bool
     {
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("SELECT `word_id` FROM `Words` WHERE `word` =:word;");
-        if (!$query->execute(array('word' => $word))) {
+        $selector = $pdo->prepare("SELECT `word_id` FROM `Words` WHERE `word` =:word;");
+        if (!$selector->execute(array('word' => $word))) {
             return false;
         }
-        return $query->rowCount() == 1;
+        return $selector->rowCount() == 1;
     }
 
     public function writeToDB(string $word): void
     {
 
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
-        try {
-            $pdo->beginTransaction();
-            if (!$this->isSavedToDB($word)) {
-                $stmt->execute([$word]);
-            }
-            $pdo->commit();
-        } catch (PDOException $exception) {
-            $pdo->rollback();
-            throw $exception;
+        $writer = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
+        if (!$this->isSavedToDB($word)) {
+            $writer->execute([$word]);
         }
     }
 
@@ -48,14 +40,14 @@ class WordDB
 
         $pdo = $this->dbConfig->getConnection();
 
-        $stmt = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
+        $writer = $pdo->prepare("REPLACE INTO Words(word) VALUES (?)");
         try {
             $pdo->beginTransaction();
 
             for ($i = 0; $i < count($words); $i++) {
                 if (!$this->isSavedToDB($words[$i])) {
 
-                    $stmt->execute([$words[$i]]);
+                    $writer->execute([$words[$i]]);
                 }
             }
             $pdo->commit();
@@ -68,26 +60,18 @@ class WordDB
     public function deleteFromDB(string $word)
     {
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("DELETE FROM `Words` WHERE `word`=?");
-        $query->execute([$word]);
+        $deleter = $pdo->prepare("DELETE FROM `Words` WHERE `word`=?");
+        $deleter->execute([$word]);
     }
 
     public function writeWordsPatternsIDs(string $word, array $patterns): void
     {
         $pdo = $this->dbConfig->getConnection();
-        $stmt = $pdo->prepare('INSERT INTO WordsAndPatternsID (word_id, pattern_id)
-        VALUES ((SELECT word_id FROM Words WHERE word = ?), (SELECT pattern_id FROM Patterns WHERE pattern = ?))');//iskelt atskirus kintamuosius
+        $writer = $pdo->prepare('INSERT INTO WordsAndPatternsID (word_id, pattern_id)
+        VALUES ((SELECT word_id FROM Words WHERE word = ?), (SELECT pattern_id FROM Patterns WHERE pattern = ?))');
 
-        try {
-            $pdo->beginTransaction();
-            foreach ($patterns as $pattern) {
-
-                $stmt->execute([$word, $pattern]);
-            }
-            $pdo->commit();
-        } catch (PDOException $exception) {
-            $pdo->rollback();
-            throw $exception;
+        foreach ($patterns as $pattern) {
+            $writer->execute([$word, $pattern]);
         }
     }
 

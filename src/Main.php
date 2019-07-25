@@ -14,12 +14,14 @@ use Fikusas\TimeKeeping\TimeKeeping;
 
 class Main
 {
-
     private $timeKeeping;
     private $logger;
     private $inputOptionParser;
     private $hyphenator;
+
     private $container;
+
+    /** @var OptionDivider */
     private $optionDivider;
 
     public function __construct()

@@ -28,7 +28,6 @@ class SentenceHyphenator
 
     }
 
-
     public function hyphenateSentence(string $sentence): string
     {
         $result = '';
@@ -46,5 +45,4 @@ class SentenceHyphenator
         }
         return $result;
     }
-
 }

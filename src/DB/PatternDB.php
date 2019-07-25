@@ -19,14 +19,14 @@ class PatternDB
     {
         $pdo = $this->dbConfig->getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO Patterns (pattern) VALUES (?)");
+        $writer = $pdo->prepare("INSERT INTO Patterns (pattern) VALUES (?)");
 
         try {
             $pdo->beginTransaction();
             $pdo->exec("DELETE FROM `Patterns`");
             $pdo->exec("DELETE FROM `Words`");
             foreach ($patterns as $row) {
-                $stmt->execute([$row]);
+                $writer->execute([$row]);
             }
             $pdo->commit();
         } catch (PDOException $exception) {
@@ -39,13 +39,13 @@ class PatternDB
     public function getFromDB($word): array
     {
         $pdo = $this->dbConfig->getConnection();
-        $query = $pdo->prepare("select pattern from Words
+        $selector = $pdo->prepare("select pattern from Words
         inner join WordsAndPatternsID on Words.word_id = WordsAndPatternsID.word_id
         inner join Patterns on WordsAndPatternsID.pattern_id = Patterns.pattern_id
         where word = ?");
-        $query->execute([$word]);
+        $selector->execute([$word]);
 
-        return $query->fetchAll();
+        return $selector->fetchAll();
     }
 
 

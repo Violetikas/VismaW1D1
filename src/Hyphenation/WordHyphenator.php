@@ -17,7 +17,7 @@ class WordHyphenator implements WordHyphenatorInterface
     private $wordDB;
     private $dbConfig;
     private $patternDB;
-    private $hdb;
+    private $hyphenatedWordsDB;
 
     /**
      * WordHyphenator constructor.
@@ -25,20 +25,23 @@ class WordHyphenator implements WordHyphenatorInterface
      * @param DatabaseConnectorInterface $dbConfig
      * @param WordDB $wordDB
      * @param PatternDB $patternDB
-     * @param HyphenatedWordsDB $hdb
+     * @param HyphenatedWordsDB $hyphenatedWordsDB
      */
-    public function __construct(PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hdb)
+    public function __construct(PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hyphenatedWordsDB)
     {
         $this->patterns = $loader->loadPatterns();
         $this->dbConfig = $dbConfig;
         $this->wordDB = $wordDB;
         $this->patternDB = $patternDB;
-        $this->hdb = $hdb;
+        $this->hyphenatedWordsDB = $hyphenatedWordsDB;
     }
 
     public function hyphenate(string $word): string
     {
+        var_dump('word');
+        $this->wordDB->writeToDB($word);
         $numbersInWord = $this->findNumbersInWord($word);
+
         $final = '';
         foreach (str_split($word) as $i => $l) {
             $final .= $l;
@@ -46,7 +49,8 @@ class WordHyphenator implements WordHyphenatorInterface
                 $final .= $numbersInWord[$i];
             }
         }
-        $this->hdb->writeToDB($word, $this->printResult($final));
+        $this->wordDB->writeToDB($word);
+        $this->hyphenatedWordsDB->writeToDB($word, $this->printResult($final));
 
         return $this->printResult($final);
     }
@@ -77,7 +81,7 @@ class WordHyphenator implements WordHyphenatorInterface
                 }
             }
         }
-//      $this->storePatterns($word, $patterns);
+        $this->storePatterns($word, $patterns);
         return $numbersInWord;
     }
 

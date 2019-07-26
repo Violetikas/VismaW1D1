@@ -19,6 +19,7 @@ class WordHyphenator implements WordHyphenatorInterface
     private $patternDB;
     private $hyphenatedWordsDB;
 
+
     /**
      * WordHyphenator constructor.
      * @param PatternLoaderInterface $loader
@@ -38,7 +39,7 @@ class WordHyphenator implements WordHyphenatorInterface
 
     public function hyphenate(string $word): string
     {
-        var_dump('word');
+//        var_dump('word');
         $this->wordDB->writeToDB($word);
         $numbersInWord = $this->findNumbersInWord($word);
 
@@ -142,4 +143,3 @@ class WordHyphenator implements WordHyphenatorInterface
         $this->wordDB->writeWordsPatternsIDs($word, $patterns);
     }
 }
-

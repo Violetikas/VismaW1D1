@@ -89,14 +89,4 @@ class OptionDivider
         } else throw new RuntimeException('Missing option');
 
     }
-
-    public function getWord(InputParameters $inputOption)
-    {
-
-        if ($value = $inputOption->getOption('-w')) {
-
-            $this->output->writeLine($this->hyphenator->hyphenate($value));
-            return;
-        }
-    }
 }

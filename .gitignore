@@ -5,3 +5,5 @@ testSentenceForRegex.txt
 composer.phar
 vendor/
 errorLogger.Log
+phpunit.phar
+phpunit

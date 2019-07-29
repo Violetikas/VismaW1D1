@@ -28,7 +28,6 @@ class DBHyphenator implements WordHyphenatorInterface
 
     public function hyphenate(string $word): string
     {
-        var_dump('db');
         $hyphenatedWord = $this->hyphenatedWordsDB->getFromDB($word);
         if (!$hyphenatedWord) {
             $this->wordsDB->writeToDB($word);

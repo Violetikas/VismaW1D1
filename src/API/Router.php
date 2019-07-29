@@ -3,18 +3,18 @@
 
 namespace Fikusas\API;
 
+use Fikusas\DI\ContainerBuilder;
+
 class Router
 {
-
+    /** @var Controller */
     private $controller;
+    private $container;
 
-    /**
-     * Router constructor.
-     * @param $controller
-     */
-    public function __construct(Controller $controller)
+    public function __construct()
     {
-        $this->controller = $controller;
+        $this->container = (new ContainerBuilder())->build();
+        $this->controller = $this->container->get(Controller::class);
     }
 
 
@@ -28,14 +28,15 @@ class Router
 
                 $response = $this->controller->getWords();
             } elseif ($method == 'POST') {
-                $response = $this->controller->insertWord();
+                $response = $this->controller->insertWord(new Request(file_get_contents('php://input')));
+            }
+            elseif ($method === 'PUT') {
+                $response = $this->controller->updateWord(new Request(file_get_contents('php://input')));
             }
         } elseif (preg_match('#^/words/(.+)#', $uri, $matches)) {
             $word = $matches[1];
             if ($method == 'DELETE') {
                 $response = $this->controller->deleteWord($word);
-            } elseif ($method == 'POST') {
-                $response = $this->controller->updateWord($word);
             }
         }
 
@@ -43,7 +44,14 @@ class Router
             $response = new Response(['error' => 'Unsupported request'], 400);
         }
 
-        $this->controller->respond($response);
+        $this->respond($response);
+    }
+    public function respond(Response $response): void
+    {
+        http_response_code($response->getStatus());
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json; charset=UTF-8");
+        echo $response->getContentEncoded();
     }
 
 

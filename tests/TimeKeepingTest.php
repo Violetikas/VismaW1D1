@@ -5,7 +5,7 @@ namespace Fikusas\Tests;
 use Fikusas\TimeKeeping\TimeKeeping;
 use PHPUnit\Framework\TestCase;
 
-final class TimeKeepingTest extends TestCase
+class TimeKeepingTest extends TestCase
 {
    public function testTime(){
        $time = new TimeKeeping();

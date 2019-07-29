@@ -20,10 +20,8 @@ class Controller
     private $hdb;
     private $wordDB;
     private $hyphenator;
-    private $response;
 
-
-    public function __construct(Response $response, WordHyphenatorInterface $hyphenator, PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hdb)
+    public function __construct(WordHyphenatorInterface $hyphenator, PatternLoaderInterface $loader, DatabaseConnectorInterface $dbConfig, WordDB $wordDB, PatternDB $patternDB, HyphenatedWordsDB $hdb)
     {
         $this->patterns = $loader->loadPatterns();
         $this->dbConfig = $dbConfig;
@@ -31,7 +29,6 @@ class Controller
         $this->patternDB = $patternDB;
         $this->hdb = $hdb;
         $this->hyphenator = $hyphenator;
-        $this->response = $response;
     }
 
     public function getWords(): Response
@@ -55,17 +52,10 @@ class Controller
         }
     }
 
-    public function respond(Response $response): void
-    {
-        http_response_code($this->response->getStatus());
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
-        echo $this->response->getContentEncoded();
-    }
 
-    public function insertWord(): Response
+    public function insertWord(Request $request): Response
     {
-        $input = json_decode(file_get_contents('php://input'));
+        $input = json_decode($request->getContent());
         $word = $input->word;
         $this->wordDB->writeToDB($word);
         return new Response(['message' => "Word written to DB", "word" => $word], 201);
@@ -74,7 +64,7 @@ class Controller
     public function deleteWord(string $word): Response
     {
         $this->wordDB->deleteFromDB($word);
-        return new Response(['message' => "Word deleted from to DB", "word" => $word], 200);
+        return new Response([], 200);
     }
 
     public function updateWord(string $word): Response

@@ -11,6 +11,8 @@
     "ext-pdo": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.2"
+    "phpunit/phpunit": "^8.2",
+    "codeception/codeception": "^3.0",
+    "Tests\\": "tests/api/Tests"
   }
 }

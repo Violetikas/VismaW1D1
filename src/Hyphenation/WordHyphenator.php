@@ -39,7 +39,7 @@ class WordHyphenator implements WordHyphenatorInterface
 
     public function hyphenate(string $word): string
     {
-//        var_dump('word');
+
         $this->wordDB->writeToDB($word);
         $numbersInWord = $this->findNumbersInWord($word);
 
@@ -50,10 +50,9 @@ class WordHyphenator implements WordHyphenatorInterface
                 $final .= $numbersInWord[$i];
             }
         }
-        $this->wordDB->writeToDB($word);
-        $this->hyphenatedWordsDB->writeToDB($word, $this->printResult($final));
+        $this->hyphenatedWordsDB->writeToDB($word, $this->formatResult($final));
 
-        return $this->printResult($final);
+        return $this->formatResult($final);
     }
 
     private function findNumbersInWord(string $word): array
@@ -122,7 +121,7 @@ class WordHyphenator implements WordHyphenatorInterface
         return $result;
     }
 
-    private function printResult(string $result): string
+    private function formatResult(string $result): string
     {
         for ($i = 0; $i < strlen($result); $i++) {
             if (!is_numeric($result[$i])) {

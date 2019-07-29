@@ -36,8 +36,6 @@ class OptionDivider
         $this->wordDB = $wordDB;
         $this->hyphenatedWordsDB = $hyphenatedWordsDB;
     }
-
-
     /**
      * @param $inputOption
      * @throws InvalidArgumentException

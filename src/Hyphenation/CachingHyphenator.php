@@ -29,7 +29,7 @@ class CachingHyphenator implements WordHyphenatorInterface
 
     public function hyphenate(string $word): string
     {
-//        var_dump('cache');
+
         $key = sha1($word);
         if (!($hyphenatedWord = $this->cache->get($key))) {
             $hyphenatedWord = $this->hyphenator->hyphenate($word);

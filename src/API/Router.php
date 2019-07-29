@@ -20,26 +20,23 @@ class Router
 
     public function handle()
     {
-        // Remove fixed prefix from URL.
         $uri = substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME'])));
         $method = $_SERVER['REQUEST_METHOD'];
         if ($uri == '/words') {
             if ($method == 'GET') {
-
                 $response = $this->controller->getWords();
             } elseif ($method == 'POST') {
                 $response = $this->controller->insertWord(new Request(file_get_contents('php://input')));
-            }
-            elseif ($method === 'PUT') {
-                $response = $this->controller->updateWord(new Request(file_get_contents('php://input')));
             }
         } elseif (preg_match('#^/words/(.+)#', $uri, $matches)) {
             $word = $matches[1];
             if ($method == 'DELETE') {
                 $response = $this->controller->deleteWord($word);
             }
+            elseif ($method =='PUT'){
+                $response = $this->controller->updateWord($word);
+            }
         }
-
         if (!isset($response)) {
             $response = new Response(['error' => 'Unsupported request'], 400);
         }

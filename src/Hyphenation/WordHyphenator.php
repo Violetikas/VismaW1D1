@@ -55,36 +55,6 @@ class WordHyphenator implements WordHyphenatorInterface
         return $this->formatResult($final);
     }
 
-    private function findNumbersInWord(string $word): array
-    {
-
-        $numbersInWord = [];
-        $patterns = [];
-        foreach ($this->patterns as $pattern) {
-            $toFind = preg_replace('/[\d.]/', '', $pattern);
-            $position = strpos($word, $toFind);
-            if (false === $position) {
-                continue;
-            }
-            if ($pattern[0] == '.' && $position !== 0) {
-                continue;
-            }
-            if (($pattern[strlen($pattern) - 1] === '.') && ($position !== (strlen($word) - strlen($toFind)))) {
-                continue;
-            }
-            $patterns[] = $pattern;
-            $numbers = $this->extractNumbers($pattern);
-            foreach ($numbers as $position1 => $number) {
-                $position1 = $position1 + $position;
-                if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {
-                    $numbersInWord[$position1] = $number;
-                }
-            }
-        }
-        $this->storePatterns($word, $patterns);
-        return $numbersInWord;
-    }
-
     public function findPatterns(string $word): array
     {
         $patterns = [];
@@ -105,6 +75,27 @@ class WordHyphenator implements WordHyphenatorInterface
         return $patterns;
     }
 
+    public function findNumbersInWord(string $word): array
+    {
+
+        $numbersInWord = [];
+        $patterns = $this->findPatterns($word);
+
+        foreach ($patterns as $pattern) {
+            $toFind = preg_replace('/[\d.]/', '', $pattern);
+            $position = strpos($word, $toFind);
+            $numbers = $this->extractNumbers($pattern);
+            foreach ($numbers as $position1 => $number) {
+                $position1 = $position1 + $position;
+                if (isset($numbersInWord[$position1]) !== true || $numbersInWord[$position1] < $number) {
+                    $numbersInWord[$position1] = $number;
+                }
+            }
+        }
+
+        $this->storePatterns($word, $patterns);
+        return $numbersInWord;
+    }
 
     private function extractNumbers(string $pattern): array
     {

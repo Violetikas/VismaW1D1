@@ -52,7 +52,6 @@ class Controller
         }
     }
 
-
     public function insertWord(Request $request): Response
     {
         $input = json_decode($request->getContent());

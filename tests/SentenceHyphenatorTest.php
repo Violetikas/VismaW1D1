@@ -58,11 +58,13 @@ class SentenceHyphenatorTest extends TestCase
             ->method('loadPatterns')
             ->willReturn(explode("\n", self::RESULT_FOR_PATTERNS));
         $this->hyphenator = $this->createMock(WordHyphenator::class);
+       // $this->hyphenator->expects($this->any())->method('hyphenate')->with('apple')->willReturn('a');
     }
 
     public function testSentenceHyphenator()
     {
-        $this->hyphenator->expects($this->any())->method('hyphenate')->willReturn('a');
+        $word = 'apple';
+        $this->hyphenator->expects($this->any())->method('hyphenate')->with($word)->willReturn('a');
         $sentenceHyphenator = new SentenceHyphenator($this->logger, $this->hyphenator);
         $result = $sentenceHyphenator->hyphenateSentence('apple 1245/211 apple');
         $this->assertEquals('a 1245/211 a', $result);

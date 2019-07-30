@@ -3,53 +3,32 @@
 
 namespace Fikusas\API;
 
-use Fikusas\DI\ContainerBuilder;
 
 class Router
 {
-    /** @var Controller */
-    private $controller;
-    private $container;
-
-    public function __construct()
+    public function findRoute(Request $request): array
     {
-        $this->container = (new ContainerBuilder())->build();
-        $this->controller = $this->container->get(Controller::class);
-    }
-
-
-    public function handle()
-    {
-        $uri = substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME'])));
-        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = $request->getUri();
+        $method = $request->getMethod();
         if ($uri == '/words') {
             if ($method == 'GET') {
-                $response = $this->controller->getWords();
+                return [Controller::class, 'getWords'];
             } elseif ($method == 'POST') {
-                $response = $this->controller->insertWord(new Request(file_get_contents('php://input')));
+                return [Controller::class, 'insertWord', $request];
             }
         } elseif (preg_match('#^/words/(.+)#', $uri, $matches)) {
             $word = $matches[1];
             if ($method == 'DELETE') {
-                $response = $this->controller->deleteWord($word);
+                return [Controller::class, 'deleteWord', $word];
+            } elseif ($method == 'PUT') {
+                return [Controller::class, 'updateWord', $word];
             }
-            elseif ($method =='PUT'){
-                $response = $this->controller->updateWord($word);
-            }
-        }
-        if (!isset($response)) {
-            $response = new Response(['error' => 'Unsupported request'], 400);
+        } elseif ($uri === '/' && $method === 'GET') {
+            return [ControlerWordList::class, 'getWords'];
+        } elseif ($uri === '/insert' && in_array($method, ['GET', 'POST'])) {
+            return [ControlerWriter::class, 'insertWord', $request];
         }
 
-        $this->respond($response);
+        throw new RouteNotFound();
     }
-    public function respond(Response $response): void
-    {
-        http_response_code($response->getStatus());
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
-        echo $response->getContentEncoded();
-    }
-
-
 }

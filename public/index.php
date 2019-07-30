@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Fikusas\API\Router;
+use Fikusas\API\ApiHandler;
 
-$API = new Router();
+$API = new ApiHandler();
 $API->handle();

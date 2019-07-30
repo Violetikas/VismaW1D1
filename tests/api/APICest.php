@@ -26,9 +26,8 @@ class APICest
         $I->wantToTest('Insertion of word');
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST('/words', ['word'=>'apple']);
-        $I->seeResponseCodeIsSuccessful();
+        $I->seeResponseCodeIs(201);
         $I->seeResponseIsJson();
-       ;
     }
     public function tryDeleteWord(ApiTester $I)
     {
@@ -41,8 +40,8 @@ class APICest
     public function updateWord(ApiTester $I){
         $I->wantToTest('Updating word');
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPUT('/words/Gediminas');
-        $I->seeResponseCodeIsSuccessful();
+        $I->sendPUT('/words/apple');
+        $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
             'message' => 'Word updated'

@@ -31,7 +31,7 @@ class Controller
         $this->hyphenator = $hyphenator;
     }
 
-    public function getWords(): Response
+    public function getWords(): JsonResponse
     {
         $pdo = $this->dbConfig->getConnection();
         $words = array();
@@ -46,31 +46,30 @@ class Controller
         }
 
         if (!$words == null) {
-            return new Response($words);
+            return new JsonResponse($words);
         } else {
-            return new Response(array("message" => "No words found."), 404);
+            return new JsonResponse(array("message" => "No words found."), 404);
         }
     }
 
-    public function insertWord(Request $request): Response
+    public function insertWord(Request $request): JsonResponse
     {
-        $input = json_decode($request->getContent());
-        $word = $input->word;
+        $word = $request->getPostValue('word');
         $this->wordDB->writeToDB($word);
-        return new Response(['message' => "Word written to DB", "word" => $word], 201);
+        return new JsonResponse(['message' => "Word written to DB", "word" => $word], 201);
     }
 
-    public function deleteWord(string $word): Response
+    public function  deleteWord(string $word): JsonResponse
     {
         $this->wordDB->deleteFromDB($word);
-        return new Response([], 200);
+        return new JsonResponse(['message' => 'Word deleted', 'word' => $word], 200);
     }
 
-    public function updateWord(string $word): Response
+    public function updateWord(string $word): JsonResponse
     {
         $hyphenated = $this->hyphenator->hyphenate($word);
 
-        return new Response(['message' => "Word updated", "word" => $word, "hyphenated" => $hyphenated], 200);
+        return new JsonResponse(['message' => "Word updated", "word" => $word, "hyphenated" => $hyphenated], 200);
     }
 }
 

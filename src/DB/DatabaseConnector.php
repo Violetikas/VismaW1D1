@@ -5,6 +5,7 @@ namespace Fikusas\DB;
 
 
 use Fikusas\Config\ConfigInterface;
+use Fikusas\Config\Error\ParameterNotFoundError;
 use Fikusas\Log\Logger;
 use PDO;
 
@@ -29,7 +30,7 @@ class DatabaseConnector implements DatabaseConnectorInterface
 
     /**
      * @return PDO
-     * @throws \Fikusas\Config\Error\ParameterNotFoundError
+     * @throws ParameterNotFoundError
      */
     public function getConnection(): PDO
     {
@@ -52,11 +53,11 @@ class DatabaseConnector implements DatabaseConnectorInterface
 
     private function initDB(): void
     {
-        $queries = @file_get_contents(__DIR__.'/../../database.sql');
-            if ($queries === false) {
-                $logger = new Logger();
-                $logger->critical("Cannot execute SQL query. Rollback changes.");
-            }
-            $this->pdo->exec($queries);
+        $queries = file_get_contents(__DIR__ . '/../../database.sql');
+        if ($queries === false) {
+            $logger = new Logger();
+            $logger->critical("Cannot execute SQL query. Rollback changes.");
         }
+        $this->pdo->exec($queries);
+    }
 }

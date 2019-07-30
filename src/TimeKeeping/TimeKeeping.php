@@ -11,28 +11,16 @@ namespace Fikusas\TimeKeeping;
 
 class TimeKeeping
 {
-
     private $timeStart;
-
 
     public function startTime()
     {
         $this->timeStart = microtime(true);
-
     }
-
 
     public function stopTime()
     {
-
-        $time = microtime(true)-$this->timeStart;
-
+        $time = microtime(true) - $this->timeStart;
         return $time;
     }
-
-
-
-
-
-
 }

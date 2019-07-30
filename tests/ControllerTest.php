@@ -68,7 +68,7 @@ class ControllerTest extends TestCase
     public function testInsertWord(): void
     {
         $controller = new Controller($this->hyphenator, $this->patterns, $this->dbConfig, $this->wordDB, $this->patternDB, $this->hyphenatedWordsDB);
-        $response = $controller->insertWord(new Request(json_encode(['word' => 'apple'])));
+        $response = $controller->insertWord(new Request([], ['word' => 'apple']));
         $this->assertEquals([
             'word' => 'apple',
             'message' => 'Word written to DB'

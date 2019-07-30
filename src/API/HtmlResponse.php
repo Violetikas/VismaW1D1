@@ -4,21 +4,24 @@
 namespace Fikusas\API;
 
 
-class Response
+class HtmlResponse implements ResponseInterface
 {
+    /** @var int */
     private $status;
+    /** @var string */
     private $content;
 
     /**
-     * Response constructor.
-     * @param array $content
+     * HtmlResponse constructor.
      * @param int $status
+     * @param string $content
      */
-    public function __construct(array $content, int $status = 200)
+    public function __construct(int $status, string $content)
     {
         $this->status = $status;
         $this->content = $content;
     }
+
     /**
      * @return int
      */
@@ -27,16 +30,13 @@ class Response
         return $this->status;
     }
 
-    /**
-     * @return array
-     */
-    public function getContent(): array
+    public function getContent(): string
     {
         return $this->content;
     }
 
-    public function getContentEncoded(): string
+    public function getHeaders(): array
     {
-        return json_encode($this->content);
+        return ['Content-Type: text/html; charset=utf-8'];
     }
 }
